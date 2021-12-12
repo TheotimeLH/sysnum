@@ -1,0 +1,22 @@
+INPUT 
+OUTPUT o
+VAR
+  _l_2, c, rom_:2, s, rom0:2, rom1:2, o:4, ram_:4, sram:2, _tmp, u, _tmp2, _tmp3, ra
+IN
+c = NOT _l_2
+s = REG c
+_l_2 = REG s
+
+_tmp = AND s _l_2
+_tmp2 = XOR u _tmp
+ra = SELECT 1 ram_
+_tmp3 = XOR _tmp2 ra
+u = REG _tmp3
+
+rom_ = MUX s rom0 rom1
+rom0 = ROM 1 2 u
+rom1 = ROM 1 2 u
+
+ram_ = RAM 1 4 0 1 0 o
+sram = SLICE 2 3 ram_
+o = CONCAT sram rom_
