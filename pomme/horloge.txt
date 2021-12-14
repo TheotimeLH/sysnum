@@ -1,0 +1,62 @@
+load_rom (0) r1 // les secondes
+load_rom (1) r2 // les minutes
+load_rom (2) r3 // les heures
+
+load_rom (3) r4
+save r4 (0) // les jours de 0 à 30 ou 29 ou 28 ou 27
+load_rom (3) r4
+save r4 (1) // le mois de 0 à 11
+load_rom (3) r4
+save r4 (2) // l'année
+
+set $31 r4
+save r4 (3*8) // nb jour de janvier
+set $28 r4
+save r4 (4*8) // attention aux années bissextiles
+set $31 r4
+save r4 (5*8)
+// etc
+
+Debut_attente0:
+	move_real_clock rclock
+	jump_non_nul Debut_attente0
+	jump Corps
+
+Debut_attente1:
+	move_real_clock rclock
+	jump_nul Debut_attente1
+	jump Corps
+
+Corps:
+	incr_mod r1 $60 // incr_mod fait +1 et si >= 60 alors 0
+	set_baton r1 (0) ; 
+	jump_not_nul Find_Corps // à traduire par le compilateur, en indiquant à quelle ligne sauter
+	incr_mod r2 $60
+	set_baton r2 (1)
+	jump_not_nul Find_Corps
+	incr_mod r3 $24
+	set_baton r3 (2)
+	jump_not_nul Find_Corps
+	load (0) rax // l'adresse 0 de la RAM est le jour
+	load (8) rbx // le mois actuel
+	load (8*%rbx+24) rcx // le nb de jours
+	incr_mod rax rcx
+	save rax (0)
+	set_baton rax (3)
+	jump_not_nul Find_Corps
+	load (16) rax // l'année
+	incr_mod rbx $12
+	save rbx (8)
+	set_baton rbx (4)
+	jump_not_nul Find_Corps
+	add $1 rax
+	save rax (16)
+	set_baton rax (5)
+	jump Find_Corps
+
+Fin_Corps:
+	and rclock rclock
+	jump_nul Debut_attente1
+	jump Debut_attente0
+
+// rem : On veut quand même une vraie alu ! et des opés de base
