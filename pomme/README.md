@@ -34,10 +34,12 @@ Les instructions fonctionnent pour des valeurs 8 ou 16 bits, le micro-processeur
 - `xor <int> <reg>` le ou exclusif.
 - `incrz <int> <reg>`, incrémente le registre et si la valeur devient égale au int, elle est mise à zero.
 - `load <addr> <reg>` le registre prend la valeur stockée dans la RAM à l'adresse. 
-- `save <reg> <addr>` opération inverse. 
+- `save <int> <addr>` opération inverse. 
 - `load_rom <addr> <reg>` de même mais en prenant la valeur dans la `ROM_imput`.
 - `jump <label>` Saut inconditionnel au label.
 - `jump_nul <label>` Saut à condition que le drapeau laissé par l'opération précédente soit nul. 
 - `jump_non_nul <label>` Idem mais dans le cas où le drapeau est non nul. 
+- `jump_neg <label>` Idem si strictement inférieur à 0.
+- `jump_non_neg <label>` Idem si supérieur ou égal à 0.
 - `move_real_clock <reg>` Charge la valeur de l'heure réelle (en secondes). 
 - `sept_batons <reg> <addr>` transforme la valeur en format sept batons, avec 2 chiffres en batons donc au plus le nombre 99; puis la sauvegarde à l'adresse indiqué dans la RAM.  
