@@ -37,7 +37,7 @@ let () =
   close_in ch ;
   try Production.produit (Filename.chop_suffix !file ".pomme") lignes
   with
-    | Production.Production_error { loc=pos ; msg=s } ->
+    | Production.Prod_error { loc=pos ; msg=s } ->
       report pos ;
       eprintf "erreur à la production de code: %s@." s ;
       exit 1 

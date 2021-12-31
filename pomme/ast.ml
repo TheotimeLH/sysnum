@@ -6,7 +6,7 @@ type 'a desc = {loc : localisation ; desc : 'a}
 type _reg = string
 type _int = Const of int | Reg of _reg
 type _label = string
-type _addr = _int * int
+type _addr = _reg option * int
 
 type ligne =
   | Label of _label
@@ -22,7 +22,7 @@ type ligne =
   | Xor of _int * _reg 
   | Incrz of _int * _reg 
   | Load of _addr * _reg
-  | Save of _int * _addr
+  | Save of _reg * _addr
   | Load_rom of _addr * _reg
   | Jump of _label 
   | Jump_nul of _label  

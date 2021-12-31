@@ -55,8 +55,8 @@ ligne:
     { {loc = ($startpos,$endpos) ; desc = Incrz (int1,reg2) } }
   | LOAD ; addr1 = gr_addr ; reg2 = REG
     { {loc = ($startpos,$endpos) ; desc = Load (addr1,reg2) } }
-  | SAVE ; int1 = gr_int ; addr2 = gr_addr
-    { {loc = ($startpos,$endpos) ; desc = Save (int1,addr2) } }
+  | SAVE ; reg1 = REG ; addr2 = gr_addr
+    { {loc = ($startpos,$endpos) ; desc = Save (reg1,addr2) } }
   | LOAD_ROM ; addr1 = gr_addr ; reg2 = REG
     { {loc = ($startpos,$endpos) ; desc = Load_rom (addr1,reg2) } }
   | JUMP ; lbl = LABEL
@@ -80,6 +80,7 @@ gr_int:
   | DOLLAR ; r = REG {Reg r}
 
 gr_addr:
-  | LPAR ; i = gr_int ; RPAR { (i,0) }
-  | LPAR ; i = gr_int ; PLUS ; n = CONST ; RPAR { (i,n) }
+  | LPAR ; DOLLAR ; r = REG ; RPAR { (Some r,0) }
+  | LPAR ; n = CONST ; RPAR { (None,n) }
+  | LPAR ; DOLLAR ; r = REG ; PLUS ; n = CONST ; RPAR { (Some r,n) }
 
