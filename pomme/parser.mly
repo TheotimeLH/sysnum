@@ -1,6 +1,6 @@
 %{
   open Ast
-  exception Lexing_error of string
+  exception Parser_error of string
 %}
 
 /* Déclaration des tokens */
@@ -32,47 +32,48 @@ ligne:
   | lbl = LABEL ; COLON 
     { {loc = ($startpos,$endpos) ; desc = Label lbl } }
   | MOVE ; reg1 = REG ; reg2 = REG
-    { {loc = ($startpos,$endpos) ; desc = Move (reg1,reg2) } } 
+    { {loc = ($startpos,$endpos) ; desc = Move (reg1,reg2) } } 
   | SET ; int1 = gr_int ; reg2 = REG
-    { {loc = ($startpos,$endpos) ; desc = Set (int1,reg2) } }
+    { {loc = ($startpos,$endpos) ; desc = Set (int1,reg2) } }
   | MULT ; int1 = gr_int ; reg2 = REG
-    { {loc = ($startpos,$endpos) ; desc = Mult (int1,reg2) } }
+    { {loc = ($startpos,$endpos) ; desc = Mult (int1,reg2) } }
   | ADD ; int1 = gr_int ; reg2 = REG
-    { {loc = ($startpos,$endpos) ; desc = Add (int1,reg2) } } 
+    { {loc = ($startpos,$endpos) ; desc = Add (int1,reg2) } } 
   | SUB ; int1 = gr_int ; reg2 = REG
-    { {loc = ($startpos,$endpos) ; desc = Sub (int1,reg2) } } 
+    { {loc = ($startpos,$endpos) ; desc = Sub (int1,reg2) } } 
   | NEG ; reg1 = REG
-    { {loc = ($startpos,$endpos) ; desc = Neg reg1 } } 
+    { {loc = ($startpos,$endpos) ; desc = Neg reg1 } } 
   | NOT ; reg1 = REG
-    { {loc = ($startpos,$endpos) ; desc = Not reg1 } }
+    { {loc = ($startpos,$endpos) ; desc = Not reg1 } }
   | AND ; int1 = gr_int ; reg2 = REG
-    { {loc = ($startpos,$endpos) ; desc = And (int1,reg2) } } 
+    { {loc = ($startpos,$endpos) ; desc = And (int1,reg2) } }
   | OR ; int1 = gr_int ; reg2 = REG
-    { {loc = ($startpos,$endpos) ; desc = Or (int1,reg2) } } 
+    { {loc = ($startpos,$endpos) ; desc = Or (int1,reg2) } }
   | XOR ; int1 = gr_int ; reg2 = REG
-    { {loc = ($startpos,$endpos) ; desc = Xor (int1,reg2) } } 
+    { {loc = ($startpos,$endpos) ; desc = Xor (int1,reg2) } }
   | INCRZ ; int1 = gr_int ; reg2 = REG
-    { {loc = ($startpos,$endpos) ; desc = Incrz (int1,reg2) } } 
+    { {loc = ($startpos,$endpos) ; desc = Incrz (int1,reg2) } }
   | LOAD ; addr1 = gr_addr ; reg2 = REG
-    { {loc = ($startpos,$endpos) ; desc = Load (addr1,reg2) } }  
+    { {loc = ($startpos,$endpos) ; desc = Load (addr1,reg2) } }
   | SAVE ; int1 = gr_int ; addr2 = gr_addr
-    { {loc = ($startpos,$endpos) ; desc = Save (int1,addr2) } } 
+    { {loc = ($startpos,$endpos) ; desc = Save (int1,addr2) } }
   | LOAD_ROM ; addr1 = gr_addr ; reg2 = REG
-    { {loc = ($startpos,$endpos) ; desc = Load_rom (addr1,reg2) } }  
+    { {loc = ($startpos,$endpos) ; desc = Load_rom (addr1,reg2) } }
   | JUMP ; lbl = LABEL
-    { {loc = ($startpos,$endpos) ; desc = Jump lbl } }    
+    { {loc = ($startpos,$endpos) ; desc = Jump lbl } }
   | JUMP_NUL ; lbl = LABEL
-    { {loc = ($startpos,$endpos) ; desc = Jump_nul lbl } }
+    { {loc = ($startpos,$endpos) ; desc = Jump_nul lbl } }
   | JUMP_NON_NUL ; lbl = LABEL
-    { {loc = ($startpos,$endpos) ; desc = Jump_non_nul lbl } }
+    { {loc = ($startpos,$endpos) ; desc = Jump_non_nul lbl } }
   | JUMP_NEG ; lbl = LABEL
-    { {loc = ($startpos,$endpos) ; desc = Jump_neg lbl } }
+    { {loc = ($startpos,$endpos) ; desc = Jump_neg lbl } }
   | JUMP_NON_NEG ; lbl = LABEL
-    { {loc = ($startpos,$endpos) ; desc = Jump_non_neg lbl } }
+    { {loc = ($startpos,$endpos) ; desc = Jump_non_neg lbl } }
   | MOVE_REAL_CLOCK ; reg1 = REG
-    { {loc = ($startpos,$endpos) ; desc = Move_real_clock reg1 } }   
+    { {loc = ($startpos,$endpos) ; desc = Move_real_clock reg1 } }
   | SEPT_BATONS ; reg1 = REG ; addr2 = gr_addr
-    { {loc = ($startpos,$endpos) ; desc = Sept_batons (reg1,addr2) } }   
+    { {loc = ($startpos,$endpos) ; desc = Sept_batons (reg1,addr2) } }
+
 
 gr_int:
   | n = CONST {Const n}

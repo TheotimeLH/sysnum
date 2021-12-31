@@ -1,0 +1,8 @@
+(ocamllex
+ (modules lexer))
+(menhir
+ (modules parser)
+ (flags --explain --dump))
+(executable
+ (name main)
+ (flags ()))  

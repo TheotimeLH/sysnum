@@ -3,13 +3,14 @@
 {
   open Lexing
   open Parser
+  open Ast
 
   exception Lexer_error of string
   exception Lexer_non_fini of error
   exception Interruption
 
   let instructions = Hashtbl.create 21
-  let () = List.iter (fun (s,t) -> Hashtbl.add keywords s t)
+  let () = List.iter (fun (s,t) -> Hashtbl.add instructions s t)
     ["move",MOVE ; "set",SET ;
      "mult",MULT ; "add",ADD ; "sub",SUB ; "neg",NEG ;
      "not",NOT ; "and",AND ; "or",OR ; "xor",XOR ;
@@ -28,7 +29,7 @@ let l_maj = ['A'-'Z']
 let label = l_maj (l_min | l_maj | chiffre | '-' | '_')*
 let entier = chiffre*
 let reg = 'r' (['1' - '4'] | "ax" | "bx" | "cx" | "ck")
-let instru = l_min*
+let instru = (l_min | '_')*
 
 rule token = parse
   | [' ' '\t']+ | "//" [^'\n']* {token lexbuf}
@@ -51,12 +52,10 @@ rule token = parse
   | '+' {PLUS}
   | instru as s {
       try Hashtbl.find instructions s
-      with Not_found -> raise Lexing_error "Instruction inconnue."
+      with Not_found -> raise (Lexer_error "Instruction inconnue.")
     }
   | eof {EOF}
   | _ as c {raise (Lexer_error ("Caractère illégal: " ^ String.make 1 c) ) }
-
-
 
 and comment = parse
   | "*/" 	{token lexbuf}

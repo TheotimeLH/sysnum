@@ -13,7 +13,7 @@ Il y a 8 registres :
 - Une RAM 16 bits est disponible, mais pas de pile. 
 
 ## Lexique :
-- Le code est executé linéairement en commençant à la première ligne, les espaces et les tabulations n'ont pas d'importance en revanche on attend un saut à la ligne entre chaque instruction.
+- Le code est executé linéairement en commençant à la première ligne, les espaces, les tabulations et les sauts de ligne n'ont pas d'importance.
 - On peut utiliser des labels pour faire référence à des lignes. Un label s'écrit en commençant par une majuscule, ensuite les caractères autorisés sont les lettres, les chiffres et les tirets. On attend un `:` juste après un label lors de sa définition.
 - Dans la suite `<int>` indique qu'un entier est attendu, `<reg>` pour un registre et `<label>` pour un label.
 - `$reg` fait référence à l'entier contenu dans le registre et est de type `<int>`.
@@ -21,7 +21,7 @@ Il y a 8 registres :
 - Les commentaires sur une ligne s'indique avec `//`, tandis que `/*` et `*/` encadrent une zone commentée. Les commentaires imbriqués ne sont pas acceptés. 
 
 ## Les instructions :
-Les instructions fonctionnent pour des valeurs 8 ou 16 bits, le micro-processeur transforme les valeurs ci-besoin, et infine c'est le lieu d'écriture qui importe.
+Les instructions fonctionnent pour des valeurs 8 ou 16 bits, le micro-processeur transforme les valeurs ci-besoin, et infine c'est le lieu d'écriture qui importe. Un entier brute est sur 16 bits signés.
 - `move <reg> <reg>` met le deuxième registre à la même valeur que le premier.
 - `set <int> <reg>` définit la valeur du registre. Préférez `move r1 r2` à `set $r1 r2`.
 - `mult <int> <reg>` multiplie la valeur du registre par l'int.
