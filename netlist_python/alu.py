@@ -55,7 +55,7 @@ def incr(a):
 def incr_mod(a,b):
     c = incr(a)
     m = egal(b, c)
-    return Mux(m, c, 0)
+    return Mux(m, c, Constant("0"*8))
 
 # Arithmétique
 
@@ -78,4 +78,4 @@ def n_Neg(a):
 # Main
     
 def main(a, b, op):
- 
+	
