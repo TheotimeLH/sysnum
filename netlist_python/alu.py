@@ -68,9 +68,15 @@ def n_adder(a, b):
         s = s + t
     return (s, c)
 
-def neg16(a):
+def neg(a):
     b = n_Not(a)
     return incr(b)
+
+def sub(a, b):
+	c = neg(b)
+	return n_adder(a, c)
+
+def mult(a, b):
 
 # Main
     
@@ -80,7 +86,7 @@ def main(a, b, op):
 	c1 = n_adder(a, b)
 	c2 = mult(a, b)
 	c3 = sub(a, b)
-	c4 = neg16(a)
+	c4 = neg(a)
 	c5 = not16(a)
 	c6 = and16(a, b)
 	c7 = or16(a, b)
@@ -98,4 +104,4 @@ def main(a, b, op):
 	d8 = Mux(op[3], c8, c9)
 	d9 = nul(d0)
 	
-	return d0, d9
+	return (d0, d9)
