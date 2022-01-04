@@ -26,6 +26,7 @@ def main():
     
     def interf_alu(value_reg1, value_reg2, entier, resultat_nul, resultat_neg operation_brute) :
         def decode_op(operation_brute) :
+            return operation_brute[:4], operation_brute[4]
 
         code_operation, op_entier = decode_op(operation_brute)
         resultat_precedent_nul = Reg(resultat_nul)
