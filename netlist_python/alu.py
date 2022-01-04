@@ -3,25 +3,25 @@ from lib_carotte import *
 
 # Logique
     
-def Not16(a):
+def not16(a):
     s = ~a[0]
     for i in range(1, 16):
         s = s + ~a[i]
     return s
     
-def And16(a, b):
+def and16(a, b):
     s = a[0] & b[0]
     for i in range(1, 16):
         s = s + (a[i] & b[i])
     return s
     
-def Or16(a, b):
+def or16(a, b):
     s = a[0] | b[0]
     for i in range(1, 16):
         s = s + (a[i] | b[i])
     return s
     
-def Xor16(a, b):
+def xor16(a, b):
     s = a[0] ^ b[0]
     for i in range(1, 16):
         s = s + (a[i] ^ b[i])
@@ -68,7 +68,7 @@ def n_adder(a, b):
         s = s + t
     return (s, c)
 
-def Neg16(a):
+def neg16(a):
     b = n_Not(a)
     return incr(b)
 
@@ -80,11 +80,11 @@ def main(a, b, op):
 	c1 = n_adder(a, b)
 	c2 = mult(a, b)
 	c3 = sub(a, b)
-	c4 = Neg16(a)
-	c5 = Not16(a)
-	c6 = And16(a, b)
-	c7 = Or16(a, b)
-	c8 = Xor16(a, b)
+	c4 = neg16(a)
+	c5 = not16(a)
+	c6 = and16(a, b)
+	c7 = or16(a, b)
+	c8 = xor16(a, b)
 	c9 = incr_mod(a, b)
 	
 	d0 = Mux(op[0], d1, d8)
@@ -96,6 +96,6 @@ def main(a, b, op):
 	d6 = Mux(op[3], c4, c5)
 	d7 = Mux(op[3], c6, c7)
 	d8 = Mux(op[3], c8, c9)
-	d9 = Nul(d0)
+	d9 = nul(d0)
 	
 	return d0, d9
