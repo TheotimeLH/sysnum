@@ -111,4 +111,4 @@ def main(a, b, op):
 	d7 = Mux(op[3], c6, c7)
 	d8 = Mux(op[3], c8, c9)
 	d9 = nul(d0)
-	return (d0, d9)
+	return (d0, d9, d0[15])
