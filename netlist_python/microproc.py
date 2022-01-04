@@ -13,6 +13,9 @@ def main():
     prog_rom_word_size = 32
     line_incr = Constant("1")
     reg_size = 16
+    ram_addr_size = 10
+    ram_word_size = 32
+    
     #line_init = Constant("0000000000")    
    
 
