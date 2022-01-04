@@ -1,95 +1,96 @@
 
 from lib_carotte import *
-
-# Logique
     
-def not16(a):
-    s = ~a[0]
-    for i in range(1, 16):
-        s = s + ~a[i]
-    return s
+def alu(a, b, op):
+	
+    # Logique
     
-def and16(a, b):
-    s = a[0] & b[0]
-    for i in range(1, 16):
-        s = s + (a[i] & b[i])
-    return s
+    def not16(a):
+        s = ~a[0]
+        for i in range(1, 16):
+            s = s + ~a[i]
+        return s
     
-def or16(a, b):
-    s = a[0] | b[0]
-    for i in range(1, 16):
-        s = s + (a[i] | b[i])
-    return s
+    def and16(a, b):
+        s = a[0] & b[0]
+        for i in range(1, 16):
+            s = s + (a[i] & b[i])
+        return s
     
-def xor16(a, b):
-    s = a[0] ^ b[0]
-    for i in range(1, 16):
-        s = s + (a[i] ^ b[i])
-    return s
-
-# Clock
-
-def zero(n): return Constant("0"*n)
-
-def nul(a):
-    b = Constant("1")
-    for i in range(16):
-        b = ~a[i] & b
-    return b
-
-def egal(a, b):
-    c = xor16(a, b)
-    return nul(c)
-
-def incr(a):
-    b = Constant("1")
-    s = a[0] ^ b
-    b = a[0] & b
-    for i in range(1, 16):
-        s = s + (a[i] ^ b)
-        b = a[i] & b
-    return s
-
-def incr_mod(a,b):
-    c = incr(a)
-    m = egal(b, c)
-    z = zero(16)
-    return Mux(m, c, z)
-
-# Arithmétique
-
-def full_adder(a, b, c):
-    t = a ^ b
-    return (t ^ c, (t & c) | (a & b))
-
-def n_adder(a, b):
-    c = Constant("0")
-    (s, c) = full_adder(a[0], b[0], c)
-    for i in range(1, 16):
-        (t, c) = full_adder(a[i], b[i], c)
-        s = s + t
-    return (s, c)
-
-def neg(a):
-    b = not16(a)
-    return incr(b)
-
-def sub(a, b):
-    c = neg(b)
-    return n_adder(a, c)
-
-def mult(a, b):
-    z = zero(16)
-    p = Mux(b[0], z, a)
-    for i in range(1, 16):
-        s = a[15-i:16] + zero(i)
-        c = n_adder(p, s)
-        p = Mux(b[i], p, c)
-    return p
+    def or16(a, b):
+        s = a[0] | b[0]
+        for i in range(1, 16):
+            s = s + (a[i] | b[i])
+        return s
     
-# Main
+    def xor16(a, b):
+        s = a[0] ^ b[0]
+        for i in range(1, 16):
+            s = s + (a[i] ^ b[i])
+        return s
+
+    # Clock
+
+    def zero(n): return Constant("0"*n)
+
+    def nul(a):
+        b = Constant("1")
+        for i in range(16):
+            b = ~a[i] & b
+        return b
+
+    def egal(a, b):
+        c = xor16(a, b)
+        return nul(c)
+
+    def incr(a):
+        b = Constant("1")
+        s = a[0] ^ b
+        b = a[0] & b
+        for i in range(1, 16):
+            s = s + (a[i] ^ b)
+            b = a[i] & b
+        return s
+
+    def incr_mod(a,b):
+        c = incr(a)
+        m = egal(b, c)
+        z = zero(16)
+        return Mux(m, c, z)
+
+    # Arithmétique
+
+    def full_adder(a, b, c):
+        t = a ^ b
+        return (t ^ c, (t & c) | (a & b))
+
+    def n_adder(a, b):
+        c = Constant("0")
+        (s, c) = full_adder(a[0], b[0], c)
+        for i in range(1, 16):
+            (t, c) = full_adder(a[i], b[i], c)
+            s = s + t
+        return (s, c)
+
+    def neg(a):
+        b = not16(a)
+        return incr(b)
+
+    def sub(a, b):
+        c = neg(b)
+        return n_adder(a, c)
+
+    def mult(a, b):
+        z = zero(16)
+        p = Mux(b[0], z, a)
+        for i in range(1, 16):
+            s = a[15-i:16] + zero(i)
+            c = n_adder(p, s)
+            p = Mux(b[i], p, c)
+        return p
+	
+    # Main
     
-def main(a, b, op):
 	c0 = zero(16)
 	c1 = n_adder(a, b)
 	c2 = mult(a, b)
