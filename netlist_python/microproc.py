@@ -39,9 +39,8 @@ def main():
     #obtention du code
     curr_line = Reg(Defer(prog_rom_addr_size, lambda:next_line))
     curr_code = ROM(prog_rom_addr_size, prog_rom_word_size, curr_line)
-    jump_line, jump_flag_code, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram = decodeur(curr_code)
-    #à décaler, on doit utiliser les autres drapeaux de saut conditionnels : 
-    #next_line = liseur_code(jump_line, jump_flag, line_incr)
+    jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage = decodeur(curr_code)
+    next_line = liseur_code(jump_line, Defer(1, lambda:jump_flag), line_incr)
 
     #registres
     value_reg1, value_reg2 = gestion_registres(read_addr1, read_addr2, write_addr_reg, write_enable_reg, Defer(reg_size, lambda:write_data_reg))
@@ -53,13 +52,14 @@ def main():
     
 
     #écriture
-    write_data_reg = Mux(, Defer(16, lambda:ram_value), resultat)
+    write_data_reg = Mux(sauver_resultat_alu, Defer(16, lambda:ram_value), resultat)
     
     ram_addr = resultat
 
     ram_value = RAM(ram_addr_size, ram_word_size, resultat, write_enable_ram)
 
-
+    #drapeau de saut
+    jump_flag = jump_flag_inconditionnel | (jump_flag_neg & resultat_precedent_neg) | (jump_flag_nul & resultat_precedent_nul)
 
 
 
