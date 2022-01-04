@@ -29,6 +29,8 @@ def xor16(a, b):
 
 # Clock
 
+def zero(n): return Constant("0"*n)
+
 def nul(a):
     b = Constant("1")
     for i in range(16):
@@ -36,7 +38,7 @@ def nul(a):
     return b
 
 def egal(a, b):
-    c = n_Xor(a, b)
+    c = xor16(a, b)
     return nul(c)
 
 def incr(a):
@@ -51,7 +53,7 @@ def incr(a):
 def incr_mod(a,b):
     c = incr(a)
     m = egal(b, c)
-	z = Constant("0"*16)
+    z = zero(16)
     return Mux(m, c, z)
 
 # Arithmétique
@@ -69,20 +71,26 @@ def n_adder(a, b):
     return (s, c)
 
 def neg(a):
-    b = n_Not(a)
+    b = not16(a)
     return incr(b)
 
 def sub(a, b):
-	c = neg(b)
-	return n_adder(a, c)
+    c = neg(b)
+    return n_adder(a, c)
 
 def mult(a, b):
-
+    z = zero(16)
+    p = Mux(b[0], z, a)
+    for i in range(1, 16):
+        s = a[15-i:16] + zero(i)
+        c = n_adder(p, s)
+        p = Mux(b[i], p, c)
+    return p
+    
 # Main
     
 def main(a, b, op):
-	
-	c0 = Constant("0"*16)
+	c0 = zero(16)
 	c1 = n_adder(a, b)
 	c2 = mult(a, b)
 	c3 = sub(a, b)
@@ -103,5 +111,4 @@ def main(a, b, op):
 	d7 = Mux(op[3], c6, c7)
 	d8 = Mux(op[3], c8, c9)
 	d9 = nul(d0)
-	
 	return (d0, d9)
