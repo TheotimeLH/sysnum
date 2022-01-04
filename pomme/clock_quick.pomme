@@ -1,0 +1,143 @@
+/* Je garde les secondes dans r1, les minutes dans r2 et les heures dans r3. 
+	 r4, rax, rbx et rcx sont mes registres de travail.
+	 rck récupère le temps réel, en secondes (indispensable dans clock_real).
+	 Dans la RAM :
+		Adresse 0 : le jour
+		Adresse 1 : le mois
+		Adresse 2 : les deux premiers chiffres de l'année (cf plus tard)
+		Adresse 3 : les deux derniers chiffres de l'année
+		Adresse 4 : année mod 4
+		Adresses 5 à 16 : le nombre de jours de chaque mois
+		Adresses 17, 18, 19, 20, 21, 22 et 23, respectivement au format sept batons : 
+		les secondes, les minutes, les heures, le jour (+1), le mois (+1), 
+		les deux premiers chiffres de l'année, les deux derniers. 
+*/
+		
+load_rom (0) r1 // Les secondes
+load_rom (1) r2 // Les minutes
+load_rom (2) r3 // Les heures
+
+// Le jour actuel, entre 0 et 30.
+load_rom (3) r4
+save r4 (0) 
+
+// Le mois entre 0 et 11
+load_rom (4) r4
+save r4 (1) 
+
+/* L'année :
+	 Un nombre en batons vaut au plus 99, donc je coupe l'année en deux,
+	 avec les deux premiers chiffres (de poids forts) puis les deux suivants.
+	 Je garde aussi en mémoire l'année mod 4, pour les années bissextiles. */
+load_rom (5) r4 // Les deux premiers chiffres, de poids forts
+save r4 (2)
+load_rom (6) r4 // Les deux derniers, de poids faibles
+save r4 (3)
+
+// Je calcule à la main année mod 4 une fois pour l'initialisation.
+// rem : pour connaitre année mod 4, les deux chiffres de poids 
+// faibles suffisent en base 10
+move r4 rax // On passe à des registres 16 bits signés
+Moins4:
+	move rax rbx
+	sub 4 rax
+	jump_non_neg Moins4
+	save rbx (4)
+
+// Ensuite il faut sauvegarder le nombre de jours de chaque mois.
+// Je traite février en année bissextile plus tard.
+set 31 r4
+save r4 (5)
+set 28 r4
+save r4 (6)
+set 31 r4
+save r4 (7)
+set 30 r4
+save r4 (8)
+set 31 r4
+save r4 (9)
+set 30 r4
+save r4 (10)
+set 31 r4
+save r4 (11)
+set 31 r4
+save r4 (12)
+set 30 r4
+save r4 (13)
+set 31 r4
+save r4 (14)
+set 30 r4
+save r4 (15)
+set 31 r4
+save r4 (16)
+
+// On n'a pas d'attente, c'est l'unique changement par rapport à l'horloge réelle.
+// On pourrait rajouter un nombre de tours à faire.
+
+Corps:
+	// Les secondes :
+	incrz 60 r1 // Incrémente et si = 60 alors 0.
+	sept_batons r1 (17)
+	and $r1 r1 // Pour le flag
+	jump_non_nul Corps
+
+	// Les minutes :
+	incrz 60 r2
+	sept_batons r2 (18)
+	and $r2 r2
+	jump_non_nul Corps
+
+	// Les heures :
+	incrz 24 r3
+	sept_batons r3 (19)
+	and $r3 r3
+	jump_non_nul Corps
+
+	// Le jour :
+	load (0) rax // jour actuel
+	load (1) rbx // mois actuel
+	// Gestion de l'année bissextile :
+	load (4) r4 // année mod 4
+	and $r4 r4 // Pour le flag
+	jump_non_nul Pas_fevrier_biss
+	move rbx r4
+	xor 1 r4 // 1 <=> février
+	jump_non_nul Pas_fevrier_biss
+	set 29 rcx
+	jump Fin_fevrier_biss
+	Pas_fevrier_biss:
+	load ($rbx + 5) rcx
+	Fin_fevrier_biss:
+	// Fin de gestion de l'année bissextile
+	incrz $rcx rax
+	save rax (0)
+	move rax r4
+	add 1 r4
+	sept_batons r4 (20) // Jour + 1 pour aller de 1 à 31
+	and $rax rax
+	jump_non_nul Corps
+
+	// Le mois
+	incrz 12 rbx
+	save rbx (1)
+	move rbx r4
+	add 1 r4
+	sept_batons r4 (21)
+	and $rbx rbx
+	jump_non_nul Corps
+
+	// L'année
+	load (4) rcx // année mod 4
+	incrz 4 rcx
+	save rcx (4) 
+	load (3) rbx // les deux chiffres de poids faibles
+	incrz 100 rbx
+	save rbx (3)
+	sept_batons rbx (23)
+	and $rbx rbx
+	jump_non_nul Corps
+	load (2) rax // les deux chiffres de poids forts
+	add 1 rax
+	sept_batons rax (22)
+	save rax (2)
+	jump Corps
