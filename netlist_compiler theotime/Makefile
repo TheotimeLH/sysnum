@@ -1,5 +1,20 @@
+netlist_compiler:
+	dune build netlist_compiler.exe
+	rm -f $@
+	cp _build/default/netlist_compiler.exe $@
 
-all:
-	ocamlbuild netlist_compiler.byte
-	./netlist_compiler.byte test/clock_div.net
-	ocamlbuild test/clock_div.native  
+.PRECIOUS: %.ml
+
+%.exe: %.ml
+	ocamlopt $< -o $@ && rm ${patsubst %.exe, %.o,$@} ${patsubst %.exe, %.cmx,$@}${patsubst %.exe, %.cmi,$@}
+
+%.ml: %.net netlist_compiler 
+	./netlist_compiler $<
+
+simulator:
+	dune build netlist_simulator.exe
+
+clean:
+	dune clean
+	rm -f ./*.native ./*.byte ./netlist_compiler
+

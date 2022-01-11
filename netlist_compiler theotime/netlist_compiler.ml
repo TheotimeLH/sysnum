@@ -16,7 +16,7 @@ let recopie ic oc =
 
 
 let compiler filename p =
-	let skel = open_in "netlist_skeleton.ml" in
+	let skel = open_in "netlist_skeleton.ml_modif" in
 	let cfile = open_out (net_to_ml filename) in
 	(* === Introduction === *)
 	recopie skel cfile ;
@@ -90,46 +90,51 @@ let compiler filename p =
 		in 
 	let pb_op = "failwith \" Seules les op sur 1 bit sont acceptées \""	in
 
-	let mk_fct_var_input id =
-		(debut id) ^ "\t\tlet valeur = ask_input " ^ (snum id) ^ "in\n" ^ (fin id) in
+	let mk_fct_var_input id = 
+    (debut id) ^
+    begin match id with
+    | "real_clock" -> "\t\tlet valeur = (1,(int_of_float (Sys.time ())) mod 2) in \n"
+    | _ -> "\t\tlet valeur = ask_input " ^ (snum id) ^ " in\n" 
+    end
+    ^ (fin id) in
 
 	let mk_fct_var_porte (id,exp) = match exp with
 		|	Ereg r -> "let var_" ^ id ^ " () = t_val.(" ^ (snum id) ^ ")\n\n"
 		|	_ -> (* on traite juste les REG à part *) 
 		(debut id) ^
 		begin match exp with
-			|	Earg a -> "\t\tlet valeur = " ^ (sarg a) ^ "in\n"
+			|	Earg a -> "\t\tlet valeur = " ^ (sarg a) ^ " in\n"
 			|	Enot a -> 
-					"\t\tlet (len,n) = " ^ (sarg a) ^ "in\n\
+					"\t\tlet (len,n) = " ^ (sarg a) ^ " in\n\
 					\t\tlet n = ref n and k = ref 0 in\n\
 					\t\tfor i = 0 to len do\n\
 					\t\t\tk := !k + ((1-(!n mod 2)) lsl i) ; n := !n lsr 1 done ;\n\
 					\t\tlet valeur = (len,!k) in \n"
 
 			|	Ebinop (Xor,a1,a2) ->
-					"\t\tlet (len1,n1) = " ^ (sarg a1) ^ "and (len2,n2) = " ^ (sarg a2) ^ "in\n\
+					"\t\tlet (len1,n1) = " ^ (sarg a1) ^ " and (len2,n2) = " ^ (sarg a2) ^ " in\n\
 					\t\tlet valeur = if len1=1 && len2=1 then (1, Bool.to_int (n1<>n2))\n\
 					\t\telse "^ pb_op ^" in\n\n"
 
 			|	Ebinop (op,a1,a2) ->
-					"\t\tlet (len1,n1) = " ^ (sarg a1) ^ "in\n\
+					"\t\tlet (len1,n1) = " ^ (sarg a1) ^ " in\n\
 					\t\tlet valeur = if len1<>1 then "^ pb_op ^ "\n\
 					\t\telse " ^
 					begin match op with
-						|	Or -> "if n1=1 then (1,1) \n"
-						|	And -> "if n1=0 then (1,0) \n"
-						|	_ (*Nand*) -> "if n1=0 then (1,1) \n" end ^
-					"\t\t\telse let (len2,n2) = " ^ (sarg a2) ^ "in \n\
+						|	Or -> " if n1=1 then (1,1) \n"
+						|	And -> " if n1=0 then (1,0) \n"
+						|	_ (*Nand*) -> " if n1=0 then (1,1) \n" end ^
+					"\t\t\telse let (len2,n2) = " ^ (sarg a2) ^ " in \n\
 					\t\t\tif len2 <> 1 then "^ pb_op ^ "\n\
 					\t\t\telse " ^
           begin match op with
-            | Or -> "if n2=1 then (1,1) else (1,0) in \n"
-            | And -> "if n2=0 then (1,0) else (1,1) in \n"
-            | _ (*Nand*) -> "if n2=0 then (1,1) else (1,0) in \n" end
+            | Or -> " if n2=1 then (1,1) else (1,0) in \n"
+            | And -> " if n2=0 then (1,0) else (1,1) in \n"
+            | _ (*Nand*) -> " if n2=0 then (1,1) else (1,0) in \n" end
 
 			|	Emux (choice,a1,a2) ->
 					"\t\tlet valeur = if snd ("^ (sarg choice) ^ ") > 0 then "^ (sarg a2) ^
-					"else " ^ (sarg a1) ^ "in\n"
+					"else " ^ (sarg a1) ^ " in\n"
 
 			|	Erom (_,_,a) -> 
 					"\t\tlet valeur = t_roms.("^ (snum id) ^").(snd ("^ (sarg a) ^")) in\n"
@@ -138,16 +143,16 @@ let compiler filename p =
 					"\t\tlet valeur = t_rams.("^ (snum id) ^").(snd ("^ (sarg a) ^")) in\n"
 
 			| Econcat (a1,a2) ->
-					"\t\tlet (len1,n1) = " ^ (sarg a1) ^ "and (len2,n2) = " ^ (sarg a2) ^ "in\n\
+					"\t\tlet (len1,n1) = " ^ (sarg a1) ^ " and (len2,n2) = " ^ (sarg a2) ^ " in\n\
 					\t\tlet valeur = (len1+len2,(n1 lsl len2) + n2) in\n"
 
 			|	Eselect (i,a) -> 
 					"\t\tlet (len,n) = "^ (sarg a) ^" and i = "^ (string_of_int i) ^" in \n\
-					\t\tlet valeur = if i+1>len then failwith \"i-eme bit avec i>len\" \n\
+					\t\tlet valeur = if i+1>len then failwith \" i-eme bit avec i>len\" \n\
 					\t\telse (1,(n lsr (len-i-1)) mod 2) in\n"
 
 			|	Eslice (i1,i2,a) -> 
-					"\t\tlet (len,n) = "^ (sarg a) ^"in \n\
+					"\t\tlet (len,n) = "^ (sarg a) ^" in \n\
 					\t\tlet i1 = "^ (string_of_int i1) ^" and i2 = "^ (string_of_int i2) ^" in\n\
 					\t\tlet valeur = if i2+1>len || i2 < i1 then failwith \"pb slice\"\n\
 					\t\telse (i2-i1+1,( (n lsr (len-i2-1)) mod (1 lsl (i2-i1+1)))) in\n"
@@ -163,10 +168,15 @@ let compiler filename p =
 	recopie skel cfile ;
 
 	(* === Les sorties === *)
-	let mk_sortie id = 
-		"\t\tlet sortie = (intv_to_strb (var_"^ id ^" ())) in\n\
-		\t\tif !print_sorties then Printf.printf \"=> "^ id ^" = %s \\n\" sortie ;" in
-	output_string cfile (String.concat "\n" (List.map mk_sortie p.p_outputs)) ;
+  let doit_affiche_batons = ref false in
+  let outputs' = List.filter 
+    (fun id -> if id = "maj_ecran" then 
+      (doit_affiche_batons := true ; false) else true)
+    p.p_outputs in
+	let mk_sortie id =
+		  "\t\tlet sortie = (intv_to_strb (var_"^ id ^" ())) in\n\
+		  \t\tif !print_sorties then Printf.printf \"=> "^ id ^" = %s \\n\" sortie ;" in
+	output_string cfile (String.concat "\n" (List.map mk_sortie outputs')) ;
 	recopie skel cfile ;
 
 	(* === Les REG / RAM === *)
@@ -182,6 +192,13 @@ let compiler filename p =
 	let mk_reg2 (a,_) =
 		"\t\tt_val.("^ (snum a) ^") <- t_reg.("^ (snum a) ^") ;\n" in
 	output_string cfile (String.concat "" (List.map mk_reg2 !l_regs)) ; 
+
+  (* === La sortie spéciale Sept_batons === *)
+  if !doit_affiche_batons then output_string cfile
+    ("\n\t\t (* Cas spécial, où on a demandé à utiliser des sept_batons : *) \n\
+    \t\tif snd (var_maj_ecran ()) = 1 then (\n\
+    \t\tlet ram = t_rams.(" ^ (snum "maj_ecran") ^ ") in \n\
+    \t\t\taffiche_batons (snd ram.(0)) (snd ram.(1)) (snd ram.(2)) (snd ram.(3)) ) ;\n") ;
 
 	(* === Fin ===*)
 	try recopie skel cfile
