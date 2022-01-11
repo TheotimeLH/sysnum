@@ -2,7 +2,9 @@
 
 from lib_carotte import *
 
-from tutorial.utils import full_adder
+from netlist_python.registres import gestion_registres
+from netlist_python.alu import alu
+from netlist_python.decodeur import decodeur
 
 #from endroit import decodeur
 #from autre endroit import alu
@@ -20,7 +22,15 @@ def main():
    
 
     def liseur_code(jump_line, jump_flag, line_incr) :
-        line_plus, out_carry = full_adder(curr_line, line_incr)
+        def incr_line(a):
+            b = Constant("1")
+            s = a[0] ^ b
+            b = a[0] & b
+            for i in range(1, prog_rom_word_size):
+                s = s + (a[i] ^ b)
+                b = a[i] & b
+            return s
+        line_plus = incr_line(curr_line, line_incr)
         curr_line = Mux(jump_flag, lineplus, jump_line)
         return curr_line
     
@@ -39,6 +49,7 @@ def main():
     #obtention du code
     curr_line = Reg(Defer(prog_rom_addr_size, lambda:next_line))
     curr_code = ROM(prog_rom_addr_size, prog_rom_word_size, curr_line)
+    
     jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage = decodeur(curr_code)
     next_line = liseur_code(jump_line, Defer(1, lambda:jump_flag), line_incr)
 
@@ -61,6 +72,8 @@ def main():
     #drapeau de saut
     jump_flag = jump_flag_inconditionnel | (jump_flag_neg & resultat_precedent_neg) | (jump_flag_nul & resultat_precedent_nul)
 
+    #gestions des batons et de la ram à batons
 
+    #gestion de la real_clock
 
 
