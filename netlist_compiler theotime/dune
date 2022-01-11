@@ -1,0 +1,8 @@
+(executable
+ (name netlist_compiler)
+ (flags ()))  
+
+(menhir
+ (modules netlist_parser))
+(ocamllex netlist_lexer)
+
