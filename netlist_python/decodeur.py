@@ -26,7 +26,7 @@ def decodeur(code) :
     jump_flag_nul = Mux(sautage, zero, (~c3 & ~c4 & c5 & ~c6))
     jump_flag_non_nul = Mux(sautage, zero, (~c3 & ~c4 & c5 & c6))
     
-    jump_line = entier
+    jump_line = entier[6:16]
  
  
     #operation brute

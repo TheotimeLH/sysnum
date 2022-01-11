@@ -5,8 +5,14 @@ from lib_carotte import *
 from netlist_python.registres import gestion_registres
 from netlist_python.alu import alu
 from netlist_python.decodeur import decodeur
-##à importer : sept_batons
-allow_ribbon_logic_operation(True)
+
+
+#TEMPORAIRE, À IMPORTER 
+def sept_batons(a) :
+    return Constant("0"*16)
+#----------------------
+
+allow_ribbon_logic_operations(True)
 
 def main():
     #initialisation
@@ -25,23 +31,25 @@ def main():
             b = Constant("1")
             s = a[0] ^ b
             b = a[0] & b
-            for i in range(1, prog_rom_word_size):
+            for i in range(1, prog_rom_addr_size):
                 s = s + (a[i] ^ b)
                 b = a[i] & b
             return s
-        line_plus = incr_line(curr_line, line_incr)
-        curr_line = Mux(jump_flag, lineplus, jump_line)
+        curr_line = Mux(jump_flag, Defer(prog_rom_addr_size, lambda:lineplus), jump_line)
+        line_plus = incr_line(curr_line)
         return curr_line
     
     def interf_alu(value_reg1, value_reg2, entier, resultat_nul, resultat_neg, operation_brute) :
         def decode_op(operation_brute) :
-            return operation_brute[:4], operation_brute[4]
+            return operation_brute[0:4], operation_brute[4]
 
         code_operation, op_entier = decode_op(operation_brute)
         resultat_precedent_nul = Reg(resultat_nul)
+        resultat_precedent_neg = Reg(resultat_neg)
         value1 = value_reg1
         value2 = Mux(op_entier, value_reg2, entier)
-        return value1, value2, resultat_precedent_nul
+        operation = decode_op(operation_brute)
+        return value1, value2, resultat_precedent_nul, resultat_precedent_neg, operation
 
 
 
@@ -58,7 +66,7 @@ def main():
     #calcul
     value1, value2, resultat_precedent_nul, resultat_precedent_neg, operation = interf_alu(value_reg1, value_reg2, entier, Defer(1, lambda:resultat_nul), Defer(1, lambda:resultat_neg), operation_brute)
 
-    resultat, resulat_nul, resultat_neg = alu(value_1, value_2, operation)
+    resultat, resulat_nul, resultat_neg = alu(value1, value2, operation)
     
 
     #écriture

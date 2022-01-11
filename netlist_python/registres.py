@@ -1,5 +1,6 @@
 from lib_carotte import *
 reg_size = 16
+allow_ribbon_logic_operations(True)
 
 def gestion_registres(read_addr1, read_addr2, write_addr, write_enable, write_data) :
     def registre(write_data, write_enable) :
@@ -64,4 +65,14 @@ def gestion_registres(read_addr1, read_addr2, write_addr, write_enable, write_da
     value_reg2 = Mux(read_addr2[0], Constant("0"*16), val2)
 
     return value_reg1, value_reg2
-    
+
+
+def main() :
+    r1 = Input(4)
+    r2 = Input(4)
+    wa = Input(4)
+    we = Input(1)
+    w_value = Input(16)
+    reg1, reg2 = gestion_registres(r1, r2, wa, we, w_value) 
+    reg1.set_as_output("val1")
+    reg2.set_as_output("val2")
