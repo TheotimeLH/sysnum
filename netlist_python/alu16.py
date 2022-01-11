@@ -85,7 +85,7 @@ def alu(a, b, op):
         p = Mux(b[0], z, a)
         for i in range(1, 16):
             s = a[i:16] + zero(i)
-            c, osef = n_adder(p, s)
+            c, d = n_adder(p, s)
             p = Mux(b[i], p, c)
         return p
 	
@@ -114,7 +114,8 @@ def alu(a, b, op):
     d9 = nul(d0)
     return (d0, d9, d0[15])
 
-#DEBUG#
+# DEBUG #
+
 def main() :
     a = Input(16)
     b = Input(16)
