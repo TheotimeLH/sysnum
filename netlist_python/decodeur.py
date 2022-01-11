@@ -3,9 +3,9 @@ from lib_carotte import *
 def decodeur(code) :
     commande = code[0:8]
     entier = code[8:24]
-    read_addr_1 = code[24:28]
-    read_addr_2 = code[28:32]
-    write_addr_reg = read_addr_2
+    read_addr1 = code[24:28]
+    read_addr2 = code[28:32]
+    write_addr_reg = read_addr2
     zero = Constant("0")
     un = Constant("1")
     
@@ -22,9 +22,9 @@ def decodeur(code) :
     sautage = c0 & ~(c1 | c2)
     jump_flag_inconditionnel = Mux(sautage, zero, (~c3 & ~c4 & ~c5 & c6))
     jump_flag_neg = Mux(sautage, zero, (~c3 & c4 & ~c5 & ~c6))
-    jump_flag_not_neg = Mux(sautage, zero, (~c3 & c4 & ~c5 & c6))
+    jump_flag_non_neg = Mux(sautage, zero, (~c3 & c4 & ~c5 & c6))
     jump_flag_nul = Mux(sautage, zero, (~c3 & ~c4 & c5 & ~c6))
-    jump_flag_not_nul = Mux(sautage, zero, (~c3 & ~c4 & c5 & c6))
+    jump_flag_non_nul = Mux(sautage, zero, (~c3 & ~c4 & c5 & c6))
     
     jump_line = entier
  

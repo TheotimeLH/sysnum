@@ -5,9 +5,8 @@ from lib_carotte import *
 from netlist_python.registres import gestion_registres
 from netlist_python.alu import alu
 from netlist_python.decodeur import decodeur
-
-#from endroit import decodeur
-#from autre endroit import alu
+##à importer : sept_batons
+allow_ribbon_logic_operation(True)
 
 def main():
     #initialisation
@@ -34,7 +33,7 @@ def main():
         curr_line = Mux(jump_flag, lineplus, jump_line)
         return curr_line
     
-    def interf_alu(value_reg1, value_reg2, entier, resultat_nul, resultat_neg operation_brute) :
+    def interf_alu(value_reg1, value_reg2, entier, resultat_nul, resultat_neg, operation_brute) :
         def decode_op(operation_brute) :
             return operation_brute[:4], operation_brute[4]
 
