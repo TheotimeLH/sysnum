@@ -72,7 +72,7 @@ let rec ask_input num =
 	Printf.printf "%s = " t_nom.(num) ;
 	try (strb_to_intv (read_line ()) t_len.(num))
 	with Wrong_length -> 
-		Printf.printf "ERREUR : on demande %d bits" t_len.(num) ;
+		Printf.printf "ERREUR : on demande %d bits \n" t_len.(num) ;
 		ask_input num 
 
 let recup_rom (num,a_size,w_size) = 
