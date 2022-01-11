@@ -106,10 +106,12 @@ let compiler filename p =
 			|	Earg a -> "\t\tlet valeur = " ^ (sarg a) ^ " in\n"
 			|	Enot a -> 
 					"\t\tlet (len,n) = " ^ (sarg a) ^ " in\n\
+          \t\tlet valeur = (len,(lnot n) land ((1 lsl len) -1)) in \n"
+          (*
 					\t\tlet n = ref n and k = ref 0 in\n\
-					\t\tfor i = 0 to len do\n\
+					\t\tfor i = 0 to len -1 do\n\
 					\t\t\tk := !k + ((1-(!n mod 2)) lsl i) ; n := !n lsr 1 done ;\n\
-					\t\tlet valeur = (len,!k) in \n"
+					\t\tlet valeur = (len,!k) in \n *)
 
 			|	Ebinop (Xor,a1,a2) ->
 					"\t\tlet (len1,n1) = " ^ (sarg a1) ^ " and (len2,n2) = " ^ (sarg a2) ^ " in\n\
@@ -124,13 +126,13 @@ let compiler filename p =
 						|	Or -> " if n1=1 then (1,1) \n"
 						|	And -> " if n1=0 then (1,0) \n"
 						|	_ (*Nand*) -> " if n1=0 then (1,1) \n" end ^
-					"\t\t\telse let (len2,n2) = " ^ (sarg a2) ^ " in \n\
-					\t\t\tif len2 <> 1 then "^ pb_op ^ "\n\
-					\t\t\telse " ^
+					"\t\t\telse ( let (len2,n2) = " ^ (sarg a2) ^ " in \n\
+					\t\t\t\t\tif len2 <> 1 then "^ pb_op ^ "\n\
+					\t\t\t\t\telse " ^
           begin match op with
-            | Or -> " if n2=1 then (1,1) else (1,0) in \n"
-            | And -> " if n2=0 then (1,0) else (1,1) in \n"
-            | _ (*Nand*) -> " if n2=0 then (1,1) else (1,0) in \n" end
+            | Or -> " if n2=1 then (1,1) else (1,0) ) in \n"
+            | And -> " if n2=0 then (1,0) else (1,1) ) in \n"
+            | _ (*Nand*) -> " if n2=0 then (1,1) else (1,0) ) in \n" end
 
 			|	Emux (choice,a1,a2) ->
 					"\t\tlet valeur = if snd ("^ (sarg choice) ^ ") > 0 then "^ (sarg a2) ^
