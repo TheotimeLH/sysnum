@@ -57,19 +57,19 @@ def decodeur(code) :
 
 
 
-# jump_line                     ok
-# jump_flag_inconditionnel      ok
-# jump_flag_neg                 ok
-# jump_flag_non_neg             ok
-# jump_flag_non_nul             ok
-# jump_flag_nul                 ok
-# operation_brute               ok
-# entier                        ok
-# read_addr1                    ok
-# read_addr2                    ok
-# write_addr_reg                ok
-# write_enable_reg              ok
-# write_enable_ram              ok
-# clock                         ok
-# sauver_resultat_alu           ok
-# batonnage                     ok
+# jump_line                     indique la ligne de saut 
+# jump_flag_inconditionnel      vaut 1 si la commande est un saut incond.
+# jump_flag_neg                 idem pour saut <0
+# jump_flag_non_neg             idem pour saut >=0
+# jump_flag_non_nul             idem pour saut !=0
+# jump_flag_nul                 idem pour saut ==0
+# operation_brute               la partie de la commande qui concerne l'opération
+# entier                        l'entier stocké dans la commande
+# read_addr1                    1ere adresse de lecture des registres
+# read_addr2                    2eme
+# write_addr_reg                adresse d'ecriture des registres
+# write_enable_reg              indicateur sur 1 bit
+# write_enable_ram              indicateur sur 1 bit
+# clock                         indicateur sur 1 bit
+# sauver_resultat_alu           indicateur sur 1 bit
+# batonnage                     indicateur sur 1 bit

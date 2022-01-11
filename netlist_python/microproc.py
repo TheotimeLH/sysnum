@@ -63,17 +63,26 @@ def main():
     
 
     #écriture
-    write_data_reg = Mux(sauver_resultat_alu, Defer(16, lambda:ram_value), resultat)
+    write_data_reg = Mux(sauver_resultat_alu, Defer(16, lambda:autre_sauv), resultat)
     
     ram_addr = resultat
 
-    ram_value = RAM(ram_addr_size, ram_word_size, resultat, write_enable_ram)
+    ram_value = RAM(ram_addr_size, ram_word_size, resultat, write_enable_ram, resultat, value_reg2)
 
     #drapeau de saut
     jump_flag = jump_flag_inconditionnel | (jump_flag_neg & resultat_precedent_neg) | (jump_flag_nul & resultat_precedent_nul)
 
     #gestions des batons et de la ram à batons
+    batonnage.set_as_output("maj_ecran")
+    batons = Mux(batonnage, Const("0"*16), sept_batons(value_reg2))
+    ram_batons = RAM(addr_size_batons, taille_batons, resultat, batonnage, resultat, batons)
+    
 
     #gestion de la real_clock
+    real_clock = Input(1)
+    rclock_bus = Constant("0"*15) + real_clock
+    
+    autre_sauv = MUX(lire_la_clock, ram_value, rclock_bus)
+
 
 
