@@ -37,9 +37,9 @@ def main():
                 s = s + (a[i] ^ b)
                 b = a[i] & b
             return s
-        curr_line = Mux(jump_flag, Defer(prog_rom_addr_size, lambda:line_plus), jump_line)
         line_plus = incr_line(curr_line)
-        return curr_line
+        next_line = Mux(jump_flag, line_plus, jump_line)
+        return next_line
     
     def interf_alu(value_reg1, value_reg2, entier, resultat_nul, resultat_neg, operation_brute) :
         def decode_op(operation_brute) :
@@ -60,7 +60,8 @@ def main():
     curr_code = ROM(prog_rom_addr_size, prog_rom_word_size, curr_line)
     
     jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage = decodeur(curr_code)
-    next_line = liseur_code(jump_line, Defer(1, lambda:jump_flag), line_incr)
+    
+    next_line = liseur_code(jump_line, Defer(1, lambda:jump_flag), curr_line)
 
     #registres
     value_reg1, value_reg2 = gestion_registres(read_addr1, read_addr2, write_addr_reg, write_enable_reg, Defer(reg_size, lambda:write_data_reg))
