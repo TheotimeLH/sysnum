@@ -20,5 +20,5 @@ netlist_simulator:
 
 clean:
 	dune clean
-	rm -f ./*.native ./*.byte ./netlist_compiler
+	rm -f ./*.native ./*.byte ./netlist_compiler ./netlist_simulator
 
