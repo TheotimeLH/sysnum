@@ -1,3 +1,5 @@
+all: clean netlist_compiler netlist_simulator
+
 netlist_compiler:
 	dune build netlist_compiler.exe
 	rm -f $@
@@ -18,5 +20,5 @@ netlist_simulator:
 
 clean:
 	dune clean
-	rm -f ./*.native ./*.byte ./netlist_compiler
+	rm -f ./*.native ./*.byte ./netlist_compiler ./netlist_simulator
 
