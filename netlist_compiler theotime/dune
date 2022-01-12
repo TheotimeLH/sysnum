@@ -1,5 +1,5 @@
-(executable
- (name netlist_compiler)
+(executables
+ (names netlist_compiler netlist_simulator)
  (flags ()))  
 
 (menhir
