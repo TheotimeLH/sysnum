@@ -1,3 +1,5 @@
+all: clean netlist_compiler netlist_simulator
+
 netlist_compiler:
 	dune build netlist_compiler.exe
 	rm -f $@
