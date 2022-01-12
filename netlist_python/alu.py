@@ -19,9 +19,9 @@ def alu(a, b, op):
 
     def incr(a):
         b = Constant("1")
-        for i in range(15):
-          c = a[i] & b[i]
-          b = b + c
+        for i in range(16):
+          c = a[15-i] & b[0]
+          b = c + b
         return a ^ b
 
     def incr_mod(a,b):
@@ -38,10 +38,10 @@ def alu(a, b, op):
 
     def n_adder(a, b):
         c = Constant("0")
-        (s, c) = full_adder(a[0], b[0], c)
-        for i in range(1, 16):
+        (s, c) = full_adder(a[15], b[15], c)
+        for i in range(14, -1, -1):
             (t, c) = full_adder(a[i], b[i], c)
-            s = s + t
+            s = t + s
         return (s, c)
 
     def neg(a): return incr(~a)
@@ -52,8 +52,8 @@ def alu(a, b, op):
 
     def mult(a, b):
         z = zero(16)
-        p = Mux(b[0], z, a)
-        for i in range(1, 16):
+        p = Mux(b[15], z, a)
+        for i in range(15):
             s = a[i:16] + zero(i)
             c, d = n_adder(p, s)
             p = Mux(b[i], p, c)
@@ -84,7 +84,8 @@ def alu(a, b, op):
     d9 = nul(d8)
     return (d8, d9, d8[15])
 
-#DEBUG#
+# DEBUG #
+
 def main() :
     a = Input(16)
     b = Input(16)
@@ -93,3 +94,4 @@ def main() :
     res.set_as_output("resultat")
     nul.set_as_output("est_nul")
     neg.set_as_output("est_negatif")
+
