@@ -1,28 +1,28 @@
 
 from lib_carotte import *
-    
+
 def alu(a, b, op):
-	
+
     # Logique
-    
+
     def not16(a):
         s = ~a[0]
         for i in range(1, 16):
             s = s + ~a[i]
         return s
-    
+
     def and16(a, b):
         s = a[0] & b[0]
         for i in range(1, 16):
             s = s + (a[i] & b[i])
         return s
-    
+
     def or16(a, b):
         s = a[0] | b[0]
         for i in range(1, 16):
             s = s + (a[i] | b[i])
         return s
-    
+
     def xor16(a, b):
         s = a[0] ^ b[0]
         for i in range(1, 16):
@@ -88,9 +88,9 @@ def alu(a, b, op):
             c, d = n_adder(p, s)
             p = Mux(b[i], p, c)
         return p
-	
+
     # Main
-    
+
     c0 = zero(16)
     c1, debordement = n_adder(a, b)
     c2 = mult(a, b)
@@ -102,17 +102,17 @@ def alu(a, b, op):
     c8 = xor16(a, b)
     c9 = incr_mod(a, b)
 
-    d0 = Mux(op[0], Defer(16, lambda:d1), Defer(16, lambda:d8))
-    d1 = Mux(op[1], Defer(16, lambda:d2), Defer(16, lambda:d3))
-    d2 = Mux(op[2], Defer(16, lambda:d4), Defer(16, lambda:d5))
-    d3 = Mux(op[2], Defer(16, lambda:d6), Defer(16, lambda:d7))
-    d4 = Mux(op[3], c0, c1)
-    d5 = Mux(op[3], c2, c3)
-    d6 = Mux(op[3], c4, c5)
-    d7 = Mux(op[3], c6, c7)
-    d8 = Mux(op[3], c8, c9)
-    d9 = nul(d0)
-    return (d0, d9, d0[15])
+    d0 = Mux(op[3], c0, c1)
+    d1 = Mux(op[3], c2, c3)
+    d2 = Mux(op[3], c4, c5)
+    d3 = Mux(op[3], c6, c7)
+    d4 = Mux(op[3], c8, c9)
+    d5 = Mux(op[2], d0, d1)
+    d6 = Mux(op[2], d2, d3)
+    d7 = Mux(op[1], d5, d6)
+    d8 = Mux(op[0], d7, d4)
+    d9 = nul(d8)
+    return (d8, d9, d8[15])
 
 # DEBUG #
 
