@@ -1,6 +1,8 @@
 
 from lib_carotte import *
 
+allow_ribbon_logic_operations(True)
+
 def alu(a, b, op):
 
     # Clock
@@ -82,3 +84,12 @@ def alu(a, b, op):
     d9 = nul(d8)
     return (d8, d9, d8[15])
 
+#DEBUG#
+def main() :
+    a = Input(16)
+    b = Input(16)
+    op = Input(4)
+    (res, nul, neg) = alu(a,b,op)
+    res.set_as_output("resultat")
+    nul.set_as_output("est_nul")
+    neg.set_as_output("est_negatif")
