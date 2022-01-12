@@ -90,7 +90,7 @@ def main() :
     a = Input(16)
     b = Input(16)
     op = Input(4)
-    (res, nul, neg) = alu(a,b,op)
+    (res, nul, neg) = alu(a, b, op)
     res.set_as_output("resultat")
     nul.set_as_output("est_nul")
     neg.set_as_output("est_negatif")
