@@ -74,5 +74,5 @@ def batonneur(a):
     d = Mux(m2, d01, d29)
 
     u = sub(a, d)
-    return baton(d)+baton(u)+un(2)
+    return un(2)+baton(d)+baton(u)
 
