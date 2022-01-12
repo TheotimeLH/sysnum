@@ -53,7 +53,7 @@ def alu(a, b, op):
     def mult(a, b):
         z = zero(16)
         p = Mux(b[15], z, a)
-        for i in range(15):
+        for i in range(1, 15):
             s = a[i:16] + zero(i)
             c, d = n_adder(p, s)
             p = Mux(b[i], p, c)
