@@ -1,5 +1,6 @@
 (executables
  (names netlist_compiler netlist_simulator)
+ (libraries graphics)
  (flags ()))  
 
 (menhir

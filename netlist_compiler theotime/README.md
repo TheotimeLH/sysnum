@@ -2,7 +2,7 @@
 ---
 Il y a deux simulateurs, `netlist_simulator` se contente d'exécuter la
 netlist, tandis que `netlist_compiler` crée un nouveau prgm Ocaml (du
-même nom, avec l'extension .ml) qui peut ensuite être exécuté.
+même nom, avec l'extension .ml) qui peut ensuite être executé.
 ---
 ## Pour utiliser le compilateur de netlists :
 `make netlist_compiler` crée le compilateur. `./netlist_compiler file.net` crée le fichier `file.ml`, qui correspond à la netlist compilée en Ocaml. Ensuite vous pouvez compiler ce fichier Ocaml, typiquement avec ocamlopt, de manière à créer l'executable voulu.
