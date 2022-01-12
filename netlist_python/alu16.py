@@ -3,6 +3,32 @@ from lib_carotte import *
 
 def alu(a, b, op):
 
+    # Logique
+
+    def not16(a):
+        s = ~a[0]
+        for i in range(1, 16):
+            s = s + ~a[i]
+        return s
+
+    def and16(a, b):
+        s = a[0] & b[0]
+        for i in range(1, 16):
+            s = s + (a[i] & b[i])
+        return s
+
+    def or16(a, b):
+        s = a[0] | b[0]
+        for i in range(1, 16):
+            s = s + (a[i] | b[i])
+        return s
+
+    def xor16(a, b):
+        s = a[0] ^ b[0]
+        for i in range(1, 16):
+            s = s + (a[i] ^ b[i])
+        return s
+
     # Clock
 
     def zero(n): return Constant("0"*n)
@@ -13,14 +39,18 @@ def alu(a, b, op):
             b = ~a[i] & b
         return b
 
-    def egal(a, b): return nul(a^b)
+    def egal(a, b):
+        c = xor16(a, b)
+        return nul(c)
 
     def incr(a):
         b = Constant("1")
-        for i in range(15):
-          c = a[i] & b[i]
-          b = b + c
-        return a ^ b
+        s = a[0] ^ b
+        b = a[0] & b
+        for i in range(1, 16):
+            s = s + (a[i] ^ b)
+            b = a[i] & b
+        return s
 
     def incr_mod(a,b):
         c = incr(a)
@@ -42,7 +72,9 @@ def alu(a, b, op):
             s = s + t
         return (s, c)
 
-    def neg(a): return incr(~a)
+    def neg(a):
+        b = not16(a)
+        return incr(b)
 
     def sub(a, b):
         c = neg(b)
@@ -64,10 +96,10 @@ def alu(a, b, op):
     c2 = mult(a, b)
     c3, debordement_flotant = sub(a, b)
     c4 = neg(a)
-    c5 = ~a
-    c6 = a & b
-    c7 = a | b
-    c8 = a ^ b
+    c5 = not16(a)
+    c6 = and16(a, b)
+    c7 = or16(a, b)
+    c8 = xor16(a, b)
     c9 = incr_mod(a, b)
 
     d0 = Mux(op[3], c0, c1)
@@ -82,3 +114,13 @@ def alu(a, b, op):
     d9 = nul(d8)
     return (d8, d9, d8[15])
 
+# DEBUG #
+
+def main() :
+    a = Input(16)
+    b = Input(16)
+    op = Input(4)
+    (res, nul, neg) = alu(a,b,op)
+    res.set_as_output("resultat")
+    nul.set_as_output("est_nul")
+    neg.set_as_output("est_negatif")
