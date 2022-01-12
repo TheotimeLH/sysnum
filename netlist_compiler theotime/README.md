@@ -1,6 +1,6 @@
 # Comment utiliser les simulateurs
 ---
-Il y a deux simulateurs, `netlist_simulator` se concente d'exécuter la
+Il y a deux simulateurs, `netlist_simulator` se contente d'exécuter la
 netlist, tandis que `netlist_compiler` crée un nouveau prgm Ocaml (du
 même nom, avec l'extension .ml) qui peut ensuite être exécuté.
 ---
