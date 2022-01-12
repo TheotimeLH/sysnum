@@ -1,7 +1,7 @@
 
 open Graphics
 
-let print16 x n = (* A COMPLETER *)
+let print16 x n = (* A COMPLETER *) ()
 
 let affiche_batons
   s (* secondes *)
