@@ -139,7 +139,7 @@ let compiler filename p =
 						|	And -> " if n1 = 0 then (len1,0) \n"
 						|	_ (*Nand*) -> " if n1 = 0 then (len1,1 lsl len1 - 1) \n" end ^
 					"\t\t\telse ( let (len2,n2) = " ^ (sarg a2) ^ " in \n\
-					\t\t\t\tif len1 = len2 then \n\t\t\t\t"^ (pb_binop id) ^ "\n\
+					\t\t\t\tif len1 <> len2 then \n\t\t\t\t"^ (pb_binop id) ^ "\n\
 					\t\t\t\telse " ^
           begin match op with
             | Or -> "(len1,n1 lor n2) ) in \n"
