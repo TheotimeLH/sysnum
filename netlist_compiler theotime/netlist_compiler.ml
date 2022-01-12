@@ -1,5 +1,9 @@
 open Netlist_ast
 
+(* Pour des commentaires voir netlist_skeleton, 
+   je suis à me demander si c'était bien utile de toujours
+   transporter l'info de la longueur des bus. *)
+
 let net_to_ml filename =
 	String.sub filename 0 ((String.length filename) - 4) ^ ".ml"
 
@@ -88,7 +92,9 @@ let compiler filename p =
 					"(" ^ (string_of_int n) ^ "," ^ (string_of_int !k) ^ ") "
 				end
 		in 
-	let pb_op = "failwith \" Seules les op sur 1 bit sont acceptées \""	in
+	let pb_binop id = 
+     "(Printf.eprintf \"Problème avec la porte d'opération n bits " ^ id ^ 
+     ", %d != %d\ \" len1 len2 ; exit 1)" in
 
 	let mk_fct_var_input id = 
     (debut id) ^
@@ -97,6 +103,7 @@ let compiler filename p =
     | _ -> "\t\tlet valeur = ask_input " ^ (snum id) ^ " in\n" 
     end
     ^ (fin id) in
+
 
 	let mk_fct_var_porte (id,exp) = match exp with
 		|	Ereg r -> "let var_" ^ id ^ " () = t_val.(" ^ (snum id) ^ ")\n\n"
@@ -107,7 +114,7 @@ let compiler filename p =
 			|	Enot a -> 
 					"\t\tlet (len,n) = " ^ (sarg a) ^ " in\n\
           \t\tlet valeur = (len,(lnot n) land ((1 lsl len) -1)) in \n"
-          (*
+          (* Version à la main :
 					\t\tlet n = ref n and k = ref 0 in\n\
 					\t\tfor i = 0 to len -1 do\n\
 					\t\t\tk := !k + ((1-(!n mod 2)) lsl i) ; n := !n lsr 1 done ;\n\
@@ -115,24 +122,29 @@ let compiler filename p =
 
 			|	Ebinop (Xor,a1,a2) ->
 					"\t\tlet (len1,n1) = " ^ (sarg a1) ^ " and (len2,n2) = " ^ (sarg a2) ^ " in\n\
-					\t\tlet valeur = if len1=1 && len2=1 then (1, Bool.to_int (n1<>n2))\n\
-					\t\telse "^ pb_op ^" in\n\n"
+					\t\tlet valeur = if len1 = len2 then (len1, n1 lxor n2)\n\
+					\t\telse "^ (pb_binop id) ^" in\n\n"
 
 			|	Ebinop (op,a1,a2) ->
+          (* Je veux des opérations paresseuses, si a1 vaut 1 alors a1 & _ = 1
+             ainsi on peut parfois se passer de calculer a2. Mais du coup on 
+             peut laisser passer des opérations avec len1 != len2.
+             Je me demande si c'était une bonne idée de stocker la len des buss
+             dans le prgm compilé. J'aurai pu la garder en donné dans le skeleton
+             et le compiler. Tant pis.    *)
 					"\t\tlet (len1,n1) = " ^ (sarg a1) ^ " in\n\
-					\t\tlet valeur = if len1<>1 then "^ pb_op ^ "\n\
-					\t\telse " ^
+					\t\tlet valeur = " ^
 					begin match op with
-						|	Or -> " if n1=1 then (1,1) \n"
-						|	And -> " if n1=0 then (1,0) \n"
-						|	_ (*Nand*) -> " if n1=0 then (1,1) \n" end ^
+						|	Or -> " if n1 = (1 lsl len1 - 1) then (len1,n1) \n"
+						|	And -> " if n1 = 0 then (len1,0) \n"
+						|	_ (*Nand*) -> " if n1 = 0 then (len1,1 lsl len1 - 1) \n" end ^
 					"\t\t\telse ( let (len2,n2) = " ^ (sarg a2) ^ " in \n\
-					\t\t\t\t\tif len2 <> 1 then "^ pb_op ^ "\n\
-					\t\t\t\t\telse " ^
+					\t\t\t\tif len1 <> len2 then \n\t\t\t\t"^ (pb_binop id) ^ "\n\
+					\t\t\t\telse " ^
           begin match op with
-            | Or -> " if n2=1 then (1,1) else (1,0) ) in \n"
-            | And -> " if n2=0 then (1,0) else (1,1) ) in \n"
-            | _ (*Nand*) -> " if n2=0 then (1,1) else (1,0) ) in \n" end
+            | Or -> "(len1,n1 lor n2) ) in \n"
+            | And -> "(len1,n1 land n2) ) in \n"
+            | _ (*Nand*) -> " (len1, (lnot (n1 land n2)) land (1 lsl len1 -1)) ) in \n" end
 
 			|	Emux (choice,a1,a2) ->
 					"\t\tlet valeur = if snd ("^ (sarg choice) ^ ") > 0 then "^ (sarg a2) ^

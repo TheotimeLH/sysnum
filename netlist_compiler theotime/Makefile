@@ -1,3 +1,5 @@
+all: clean netlist_compiler netlist_simulator
+
 netlist_compiler:
 	dune build netlist_compiler.exe
 	rm -f $@
@@ -11,8 +13,10 @@ netlist_compiler:
 %.ml: %.net netlist_compiler 
 	./netlist_compiler $<
 
-simulator:
+netlist_simulator:
 	dune build netlist_simulator.exe
+	rm -f $@
+	cp _build/default/netlist_simulator.exe $@
 
 clean:
 	dune clean
