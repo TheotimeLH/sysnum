@@ -71,10 +71,10 @@ let produit filename dlignes =
     | Set(Reg r1,r2) -> "001"^"0010"^"1" ^ _16 ^ (bin_r r1) ^ (bin_r r2)
 
     (* Catérogie 010: les opérations *)
-    | Mult(Const n,r2) -> "010"^"0001"^"0" ^ (bin_e dl.loc n) ^ _4 ^ (bin_r r2) 
-    | Mult(Reg r1,r2) -> "010"^"0001"^"1" ^ _16 ^ (bin_r r1) ^ (bin_r r2) 
-    | Add(Const n,r2) -> "010"^"0010"^"0" ^ (bin_e dl.loc n) ^ _4 ^ (bin_r r2)
-    | Add(Reg r1,r2) -> "010"^"0010"^"1" ^ _16 ^ (bin_r r1) ^ (bin_r r2)
+    | Add(Const n,r2) -> "010"^"0001"^"0" ^ (bin_e dl.loc n) ^ _4 ^ (bin_r r2)
+    | Add(Reg r1,r2) -> "010"^"0001"^"1" ^ _16 ^ (bin_r r1) ^ (bin_r r2)
+    | Mult(Const n,r2) -> "010"^"0010"^"0" ^ (bin_e dl.loc n) ^ _4 ^ (bin_r r2) 
+    | Mult(Reg r1,r2) -> "010"^"0010"^"1" ^ _16 ^ (bin_r r1) ^ (bin_r r2) 
     | Sub(Const n,r2) -> "010"^"0011"^"0" ^ (bin_e dl.loc n) ^ _4 ^ (bin_r r2)
     | Sub(Reg r1,r2) -> "010"^"0011"^"1" ^ _16 ^ (bin_r r1) ^ (bin_r r2)
     | Neg(r1) -> "010"^"0100"^"0" ^ _16 ^ (bin_r r1) ^ _4
@@ -91,8 +91,8 @@ let produit filename dlignes =
     (* Catégorie 011: ROM/RAM *)
     | Load((Some r1,n),r2) -> "011"^"0001"^"1" ^ (bin_e dl.loc n) ^ (bin_r r1) ^ (bin_r r2)
     | Load((None,n),r2) -> "011"^"0001"^"0" ^ (bin_e dl.loc n) ^ _4 ^ (bin_r r2)
-    | Save(r1,(Some r2,n)) -> "011"^"0010"^"1" ^ (bin_e dl.loc n) ^ (bin_r r1) ^ (bin_r r2)
-    | Save(r1,(None,n)) -> "011"^"0010"^"0" ^ (bin_e dl.loc n) ^ (bin_r r1) ^ _4
+    | Save(r1,(Some r2,n)) -> "011"^"0010"^"1" ^ (bin_e dl.loc n) ^ (bin_r r2) ^ (bin_r r1)
+    | Save(r1,(None,n)) -> "011"^"0010"^"0" ^ (bin_e dl.loc n) ^ _4 ^ (bin_r r1)
     | Load_rom((Some r1,n),r2) -> "011"^"0011"^"1" ^ (bin_e dl.loc n) ^ (bin_r r1) ^ (bin_r r2)
     | Load_rom((None,n),r2) -> "011"^"0011"^"0" ^ (bin_e dl.loc n) ^ _4 ^ (bin_r r2)
 
@@ -115,8 +115,8 @@ let produit filename dlignes =
 
     (* Catégorie 101: pour les horloges *)
     | Move_real_clock(r1) -> "101"^"0001"^"0" ^ _16 ^ (bin_r r1) ^ _4
-    | Sept_batons(r1,(Some r2,n)) -> "101"^"0010"^"1" ^ (bin_e dl.loc n) ^ (bin_r r1) ^ (bin_r r2)
-    | Sept_batons(r1,(None,n)) -> "101"^"0010"^"0" ^ (bin_e dl.loc n) ^ (bin_r r1) ^ _4
+    | Sept_batons(r1,(Some r2,n)) -> "101"^"0010"^"1" ^ (bin_e dl.loc n) ^ (bin_r r2) ^ (bin_r r1)
+    | Sept_batons(r1,(None,n)) -> "101"^"0010"^"0" ^ (bin_e dl.loc n) ^ _4 ^ (bin_r r1)
   in
   List.iter (fun dl -> output_string oc (mk_instr dl ^ "\n")) dinstrs ;
   close_out oc

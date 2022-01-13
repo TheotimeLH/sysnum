@@ -1,4 +1,8 @@
-all: get_real_time
+all: mk_get_real_time
+
+mk_get_real_time: 
+	rm -f get_real_time
+	make get_real_time
 
 get_real_time:
 	ocamlopt -c get_real_time.ml
@@ -12,5 +16,5 @@ get_real_time:
 init_time: get_real_time
 	./get_real_time
 
-.PHONY: init_time
+.PHONY: mk_get_real_time init_time
 
