@@ -212,7 +212,7 @@ let compiler filename p =
     ("\n\t\t (* Cas spécial, où on a demandé à utiliser des sept_batons : *) \n\
     \t\tif snd (var_maj_ecran ()) = 1 then (\n\
     \t\tlet ram = t_rams.(" ^ (snum "maj_ecran") ^ ") in \n\
-    \t\t\taffiche_batons (snd ram.(0)) (snd ram.(1)) (snd ram.(2)) (snd ram.(3)) ) ;\n") ;
+    \t\t\tAffiche.affiche_batons (snd ram.(0)) (snd ram.(1)) (snd ram.(2)) (snd ram.(3)) ) ;\n") ;
 
 	(* === Fin ===*)
 	try recopie skel cfile

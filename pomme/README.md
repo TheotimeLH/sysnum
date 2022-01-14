@@ -6,11 +6,9 @@ Voir `clock_real.pomme` et `clock_quick.pomme` pour des exemples.
  
 ---
 ## Outils :
-Il y a 8 registres :
-- Quatre à 8 bits non-signés: `r1` , `r2` , `r3` et `r4`
-- Quatre à 16 bits signés: `rax` , `rbx` , `rcx` et `rck`
+- Il y a 8 registres : `r1` , `r2` , `r3` , `r4` , `rax` , `rbx` , `rcx` et `rck`
 - Le micro-processeur possède une ROM d'entrée pour récupérer des valeurs extérieurs : `ROM_input.txt`
-- Une RAM 16 bits est disponible, mais pas de pile. 
+*- Et une `RAM_output` uniquement utilisé pour l'affichage sept segments*
 
 ## Lexique :
 - Le code est executé linéairement en commençant à la première ligne, les espaces, les tabulations et les sauts de ligne n'ont pas d'importance.
@@ -42,7 +40,7 @@ Les instructions fonctionnent pour des valeurs 8 ou 16 bits, le micro-processeur
 - `jump_neg <label>` Idem si strictement inférieur à 0.
 - `jump_non_neg <label>` Idem si supérieur ou égal à 0.
 - `move_real_clock <reg>` Charge la valeur de l'heure réelle (en secondes). 
-- `sept_batons <reg> <addr>` transforme la valeur en format sept batons, avec 2 chiffres en batons donc au plus le nombre 99; puis la sauvegarde à l'adresse indiqué dans la RAM.  
+- `sept_batons <reg> <addr>` transforme la valeur en format sept batons, avec 2 chiffres en batons donc au plus le nombre 99; puis la sauvegarde à l'adresse indiqué dans la `RAM_output`.  
 
 ---
 # Code binaire
@@ -51,7 +49,8 @@ Voici comme le code est compilé. Je rappelle que nos RAMS/ROMS s'écrivent lign
 - les 16 suivants l'entier signé 
 - les 4 suivants le premier registre 
 - les 4 derniers le deuxième registre 
-Si une instruction n'utilise pas d'entiers, ou qu'un seul registre, les bits vacants seront inutilisés par le micro-processeur, je les laisse à zero.
+Si une instruction n'utilise pas d'entiers, ou qu'un seul registre, les bits vacants seront inutilisés par le micro-processeur, ils sont laissés à zero.
+Précision, c'est toujours le premier registre qui est utilisé pour calculer les adresses. Sinon, le résultat est mis dans le registre 2.
 
 ### Précision sur l'encodage des instructions: 
 Comme pour les registres, puisqu'il n'y a que 21 instructions différentes,
@@ -71,8 +70,8 @@ quatre suivants pour préciser et enfin le dernier bit cf paragraphe précédent
 	- `move` 001 0001 0
 	- `set` 001 0010 0 si on utilise un entier primitif, exemple `set 5 r2` ou 001 0010 1 si on utilise un registre, exemple `set $r1 r2`
 * Catégorie 010: les opérations
-	- `mult` 010 0001 0/1
 	- `add` 010 0001 0/1
+	- `mult` 010 0010 0/1
 	- `sub` 010 0011 0/1
 	- `neg` 010 0100 0
 	- `not` 010 0101 0
@@ -93,3 +92,6 @@ quatre suivants pour préciser et enfin le dernier bit cf paragraphe précédent
 * Catégorie 101: pour les horloges
 	- `move_real_clock` 101 0001 0
 	- `sept_batons` 101 0010 0/1
+
+Les registres sont codés ainsi : `r1` : 1000 , `r2` : 1001 , `r3` : 1010 , `r4` : 1011 , `rax` : 1100 , `rbx` : 1101 , `rcx` : 1110 et `rck` : 1111.
+
