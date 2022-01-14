@@ -38,8 +38,9 @@ def decodeur(code) :
     operation = Mux(calcul_daddresse, operation_op, operation_ram)
     operation_brute = Mux(pas_de_calcul, operation, operation_pas_doperation)
 
-    #indicatrice de "lecture de la clock"
+    #indicatrice de "lecture de la clock", rom d’entrée
     lire_la_clock = c0 & ~c1 & c2 & ~c5 & c6
+    lire_la_rom = ~c0 & c1 & c2 & ~c3 & ~c4 & c5 & c6
 
 
     #write_enable
@@ -51,7 +52,7 @@ def decodeur(code) :
 
     batonnage = c0 & ~c1 & c2 & c5 & ~c6
 
-    return jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage
+    return jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage, lire_la_rom
 
 
 
@@ -73,3 +74,35 @@ def decodeur(code) :
 # clock                         indicateur sur 1 bit
 # sauver_resultat_alu           indicateur sur 1 bit
 # batonnage                     indicateur sur 1 bit
+# lire_la_rom                   indicateur sur 1 bit
+
+#debug :
+def main():
+    code_binaire = Input(32)
+    jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage, lire_la_rom = decodeur(code_binaire)
+    jump_line.set_as_output("jump_line")
+    jump_flag_inconditionnel.set_as_output("saut_inconditionnel")
+    jump_flag_neg.set_as_output("saut_neg")
+    jump_flag_non_neg.set_as_output("saut_non_neg")
+    jump_flag_nul.set_as_output("saut_nul")
+    jump_flag_non_nul.set_as_output("saut_non_nul")
+    operation_brute.set_as_output("code_operation")
+    entier.set_as_output("entier")
+    read_addr2.set_as_output("adresse_2")
+    read_addr1.set_as_output("adresse_1")
+    write_addr_reg.set_as_output("registre_decriture")
+    write_enable_reg.set_as_output("write_enable_reg")
+    write_enable_ram.set_as_output("write_enable_ram")
+    lire_la_rom.set_as_output("lire_la_rom")
+    lire_la_clock.set_as_output("lire_la_clock")
+    sauver_resultat_alu.set_as_output("sauver_resultat_alu")
+    batonnage.set_as_output("batons")
+    
+
+ 
+
+
+
+
+
+
