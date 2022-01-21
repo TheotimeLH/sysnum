@@ -1,3 +1,4 @@
+open Affiche
 open Netlist_ast
 
 (* Pour des commentaires voir netlist_skeleton, 
@@ -43,6 +44,13 @@ let compiler filename p =
 	let str_t_len = "let t_len = [|" ^ (String.concat ";" 
 		(List.map string_of_int (Array.to_list t_len))) ^ "|]\n" in
 	output_string cfile (str_nb_vars ^ str_t_nom ^ str_t_len) ;	
+  let doit_affiche_batons = ref false in
+  let outputs' = List.filter 
+    (fun id -> if id = "maj_ecran" then 
+      (doit_affiche_batons := true ; false) else true)
+    p.p_outputs in
+  if !doit_affiche_batons then output_string cfile 
+    "\nlet () = Graphics.open_graph \" 2000x1000\"\n" ;
 	recopie skel cfile ;
 
 	(* === Structures 2 (ROM et RAM) === *)
@@ -182,11 +190,6 @@ let compiler filename p =
 	recopie skel cfile ;
 
 	(* === Les sorties === *)
-  let doit_affiche_batons = ref false in
-  let outputs' = List.filter 
-    (fun id -> if id = "maj_ecran" then 
-      (doit_affiche_batons := true ; false) else true)
-    p.p_outputs in
 	let mk_sortie id =
 		  "\t\tlet sortie = (intv_to_strb (var_"^ id ^" ())) in\n\
 		  \t\tif !print_sorties then Printf.printf \"=> "^ id ^" = %s \\n\" sortie ;" in
@@ -212,8 +215,13 @@ let compiler filename p =
     ("\n\t\t (* Cas spécial, où on a demandé à utiliser des sept_batons : *) \n\
     \t\tif snd (var_maj_ecran ()) = 1 then (\n\
     \t\tlet ram = t_rams.(" ^ (snum "maj_ecran") ^ ") in \n\
-    \t\t\tAffiche.affiche_batons (snd ram.(0)) (snd ram.(1)) (snd ram.(2)) (snd ram.(3)) ) ;\n") ;
+    \t\t\tAffiche.affiche_batons (snd ram.(0)) (snd ram.(1)) (snd ram.(2)) \n\
+    \t\t\t\t(snd ram.(3)) (snd ram.(4)) (snd ram.(5)) (snd ram.(6)) )  ;\n") ;
 
+  output_string cfile 
+    (if !doit_affiche_batons then 
+      "\t\tdone ; \n\t\tGraphics.close_graph () \n"
+     else "\t\tdone\n") ; 
 	(* === Fin ===*)
 	try recopie skel cfile
 	with End_of_file -> close_in skel ; close_out cfile

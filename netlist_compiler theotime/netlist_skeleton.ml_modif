@@ -156,8 +156,8 @@ then t_roms.(<num de a>).(var_<w_addr> () ) <- var_<w_data> () ;
 PUIS
 t_val.(<num a>) <- t_reg(<num a>)
 . . . - pour tous les a = REG b		*)
-#
-		done
+# puis done
+
 
 let () = Arg.parse 
 	["-n", Arg.Set_int number_steps, "Number of steps to simulate";

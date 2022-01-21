@@ -5,7 +5,7 @@ let print16 n0 n =
   let k0, k = ref n0, ref n in
   let b0, b = ref (n0 mod 2), ref (n mod 2) in
   let set_clr () =
-    if !b then set_color foreground
+    if !b=1 then set_color foreground
     else set_color background in
   let aux () =
     if !b = !b0 then rmoveto 0 (-100)
@@ -36,7 +36,7 @@ let print16 n0 n =
     else (set_clr () ; rlineto 0 (-100) )
   in
   aux () ; 
-  (set_clr () ; rlineto 100 0 ;
+  rmoveto 100 0 ;
   aux ()
 
 let s0 = ref 0
@@ -46,8 +46,6 @@ let j0 = ref 0
 let m0 = ref 0
 let al0 = ref 0
 let ar0 = ref 0
-
-let () = open_graph " 2000x1000" ;
 
 let affiche_batons
   s (* secondes *)
@@ -60,25 +58,25 @@ let affiche_batons
 
   if s <> !s0 then begin
   moveto 350 700 ;
-  print16 s0 s ;
+  print16 !s0 s ;
   if mi <> !m1 then begin
   rmoveto 200 0 ;
-  print16 m1 mi ;
+  print16 !m1 mi ;
   if h <> !h0 then begin
   rmoveto 200 0 ;
-  print16 h0 h ;
+  print16 !h0 h ;
   if j <> !j0 then begin
   moveto 150 300 ;
-  print16 j0 j ;
+  print16 !j0 j ;
   if mo <> !m0 then begin
   rmoveto 200 0 ;
-  print16 m0 mo ;
-  if al <> al0 then begin
+  print16 !m0 mo ;
+  if al <> !al0 then begin
   rmoveto 200 0 ;
-  print16 al0 al ;
-  if ar <> ar0 then begin
+  print16 !al0 al ;
+  if ar <> !ar0 then begin
   rmoveto 100 0 ;
-  print16 ar0 ar 
+  print16 !ar0 ar 
   end end end end end end end ;
 
   s0 := s ;

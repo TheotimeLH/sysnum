@@ -16,5 +16,18 @@ get_real_time:
 init_time: get_real_time
 	./get_real_time
 
+microproc.exe:
+	cp -r ../netlist_python ../carotte.py/netlist_python
+	cd ../carotte.py; \
+		python3 carotte.py -o ../main/microproc.net netlist_python/microproc.py; \
+		rm -r netlist_python/
+	cd ../netlist_compiler\ theotime; \
+		make ../main/microproc.exe; \
+		make clean
+
+
+clean:
+	rm -f get_real_time rom_input.txt
+
 .PHONY: mk_get_real_time init_time
 
