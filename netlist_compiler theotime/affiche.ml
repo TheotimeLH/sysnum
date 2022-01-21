@@ -37,15 +37,17 @@ let print16 n0 n =
   in
   aux () ; 
   rmoveto 100 0 ;
+  k := !k/2 ; k0 := !k0/2 ;
+  b := !k mod 2 ; b0 := !k0 mod 2 ;
   aux ()
 
-let s0 = ref (-1)
-let m1 = ref (-1)
-let h0 = ref (-1)
-let j0 = ref (-1)
-let m0 = ref (-1)
-let al0 = ref (-1)
-let ar0 = ref (-1)
+let s0 = ref 0
+let m1 = ref 0
+let h0 = ref 0
+let j0 = ref 0
+let m0 = ref 0
+let al0 = ref 0
+let ar0 = ref 0
 
 let affiche_batons
   s (* secondes *)
@@ -57,7 +59,7 @@ let affiche_batons
   ar (* décennie + année *) =
 
   if s <> !s0 then begin
-  moveto 350 700 ;
+  moveto 300 600 ;
   print16 !s0 s ;
   if mi <> !m1 then begin
   rmoveto 200 0 ;
@@ -66,7 +68,7 @@ let affiche_batons
   rmoveto 200 0 ;
   print16 !h0 h ;
   if j <> !j0 then begin
-  moveto 150 300 ;
+  moveto 100 250 ;
   print16 !j0 j ;
   if mo <> !m0 then begin
   rmoveto 200 0 ;
@@ -86,5 +88,4 @@ let affiche_batons
   m0 := mo ;
   al0 := al ;
   ar0 := ar
-  
 

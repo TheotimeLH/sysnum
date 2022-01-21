@@ -14,7 +14,7 @@ def baton(d):
     b3 = ~d[3] & d[2]
     b6 = d[2] | even
     b4 = d[1] ^ d[2]
-    b2 = ~b4 | even
+    b2 = ~b3 | even
 
     r = b7+b6+b5+b4+b3+b2+b1
     r56 = z(1) + un(5) + d[2]
@@ -78,5 +78,5 @@ def batonneur(a):
     cd = d[7:11]
     bu = baton(cu)
     bd = baton(cd)
-    return un(2)+bd+bu
+    return un(16)
 
