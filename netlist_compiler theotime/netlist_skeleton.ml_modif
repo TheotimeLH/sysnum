@@ -138,7 +138,6 @@ let simulator () =
 $
 # Pour ouvrir la fenêtre
 #
-	while Sys.time () < 2.0 do () done ;
 	while !step < !number_steps do
 		incr step ;
 		if !print_sorties then Printf.printf "Step %d : \n" !step ;

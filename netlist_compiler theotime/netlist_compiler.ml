@@ -189,7 +189,8 @@ let compiler filename p =
 
 	(* === Les sorties === *)
   if !doit_affiche_batons then output_string cfile 
-    "\t\tGraphics.open_graph \" 2000x1000\" ; \n" ;
+    "\t\tGraphics.open_graph \" 2000x1000\" ; \n \
+     \t\tGraphics.set_line_width 10 ; \n" ;
   recopie skel cfile ;
 	let mk_sortie id =
 		  "\t\tlet sortie = (intv_to_strb (var_"^ id ^" ())) in\n\

@@ -5,8 +5,7 @@ mk_get_real_time:
 	make get_real_time
 
 get_real_time:
-	ocamlopt -c get_real_time.ml
-	ocamlopt unix.cmxa get_real_time.cmx -o get_real_time
+	ocamlopt -o get_real_time unix.cmxa get_real_time.ml 
 	rm get_real_time.cmi get_real_time.cmx get_real_time.o
 # Si on veut utiliser dune, il faut écrire ceci dans le dune :
 # (executable
@@ -15,6 +14,9 @@ get_real_time:
 
 init_time: get_real_time
 	./get_real_time
+
+
+SIMPLE = "0"
 
 mk_microproc:
 	rm -f microproc.exe
@@ -25,9 +27,15 @@ microproc.exe:
 	cd ../carotte.py; \
 		python3 carotte.py -o ../main/microproc.net netlist_python/microproc.py; \
 		rm -r netlist_python/
+ifeq ($(SIMPLE),"0")
 	cd ../netlist_compiler\ theotime; \
 		make ../main/microproc.exe; \
 		make clean
+else 
+	cd ../netlist_compiler\ theotime; \
+		make ../main/microproc.exe SIMPLEA="1"\
+		make clean
+endif
 
 
 clean:
