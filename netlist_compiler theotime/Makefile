@@ -25,6 +25,8 @@ SIMPLEA = "0"
 	rm affiche affiche.cmi affiche.cmx affiche.o
 	rm ${patsubst %.exe, %.o,$@} ${patsubst %.exe, %.cmx,$@}${patsubst %.exe, %.cmi,$@}
 
+%.ml: %.net netlist_compiler 
+	./netlist_compiler $<
 		
 netlist_simulator:
 	dune build netlist_simulator.exe

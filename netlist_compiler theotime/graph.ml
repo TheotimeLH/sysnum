@@ -25,7 +25,7 @@ let add_edge g id1 id2 =
     let n2 = node_of_label g id2 in
     n1.n_link_to   <- n2 :: n1.n_link_to;
     n2.n_linked_by <- n1 :: n2.n_linked_by
-  with Not_found -> Format.eprintf "Tried to add an edge between non-existing nodes"; raise Not_found
+  with Not_found -> Format.eprintf "Tried to add an edge between non-existing nodes %s et %s" id1 id2; raise Not_found
 
 let clear_marks g =
   List.iter (fun n -> n.n_mark <- NotVisited) g.g_nodes

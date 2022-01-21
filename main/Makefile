@@ -1,8 +1,6 @@
 all: mk_get_real_time mk_microproc
 
-mk_get_real_time: 
-	rm -f get_real_time
-	make get_real_time
+mk_get_real_time: clean_time get_real_time
 
 get_real_time:
 	ocamlopt -o get_real_time unix.cmxa get_real_time.ml 
@@ -15,12 +13,13 @@ get_real_time:
 init_time: get_real_time
 	./get_real_time
 
+clean_time:
+	rm -f get_real_time rom_input.txt 
+
 
 SIMPLE = "0"
 
-mk_microproc:
-	rm -f microproc.exe
-	make microproc.exe
+mk_microproc: clean_microproc microproc.exe
 
 microproc.exe:
 	cp -r ../netlist_python ../carotte.py/netlist_python
@@ -33,13 +32,14 @@ ifeq ($(SIMPLE),"0")
 		make clean
 else 
 	cd ../netlist_compiler\ theotime; \
-		make ../main/microproc.exe SIMPLEA="1"\
+		make ../main/microproc.exe SIMPLEA="1";\
 		make clean
 endif
 
+clean_microproc:
+	rm -f microproc.exe microproc.ml microproc.net
 
-clean:
-	rm -f get_real_time rom_input.txt
+clean: clean_microproc clean_time
 
 .PHONY: mk_get_real_time mk_microproc init_time
 
