@@ -1,3 +1,4 @@
+
 open Graphics
 
 let print16 n0 n =
@@ -38,13 +39,13 @@ let print16 n0 n =
   rmoveto 100 0 ;
   aux ()
 
-let s0 = ref 0
-let m1 = ref 0
-let h0 = ref 0
-let j0 = ref 0
-let m0 = ref 0
-let al0 = ref 0
-let ar0 = ref 0
+let s0 = ref (-1)
+let m1 = ref (-1)
+let h0 = ref (-1)
+let j0 = ref (-1)
+let m0 = ref (-1)
+let al0 = ref (-1)
+let ar0 = ref (-1)
 
 let affiche_batons
   s (* secondes *)
