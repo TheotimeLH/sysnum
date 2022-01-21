@@ -74,7 +74,7 @@ def main():
 
     ram_addr = resultat
 
-    rom_input = ROM(rom2_addr_size, rom2_word_size, resultat[(16-rom2_word_size):16])
+    rom_input = ROM(rom2_addr_size, rom2_word_size, resultat[8:16])
 
     ram_value = RAM(ram_addr_size, ram_word_size, resultat[6:16], write_enable_ram, resultat[6:16], value_reg2)
 
