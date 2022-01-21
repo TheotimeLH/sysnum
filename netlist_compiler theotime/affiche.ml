@@ -79,5 +79,14 @@ let affiche_batons
   if ar <> ar0 then begin
   rmoveto 100 0 ;
   print16 ar0 ar 
-  end end end end end end end
+  end end end end end end end ;
+
+  s0 := s ;
+  m1 := mi ;
+  h0 := h ;
+  j0 := j ;
+  m0 := mo ;
+  al0 := al ;
+  ar0 := ar
+  
 
