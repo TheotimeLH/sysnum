@@ -21,9 +21,9 @@ def main():
     word_size_batons = 16
     rom2_word_size = 16
     rom2_addr_size = 8
-    
+
     #line_init = Constant("0000000000")    
-   
+
 
     def liseur_code(jump_line, jump_flag, line_incr) :
         def incr_line(a):
@@ -37,7 +37,7 @@ def main():
         line_plus = incr_line(curr_line)
         next_line = Mux(jump_flag, line_plus, jump_line)
         return next_line
-    
+
     def interf_alu(value_reg1, value_reg2, entier, resultat_nul, resultat_neg, operation_brute) :
         def decode_op(operation_brute) :
             return operation_brute[0:4], operation_brute[4]
@@ -55,9 +55,9 @@ def main():
     #obtention du code
     curr_line = Reg(Defer(prog_rom_addr_size, lambda:next_line))
     curr_code = ROM(prog_rom_addr_size, prog_rom_word_size, curr_line)
-    
+
     jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage, lire_la_rom = decodeur(curr_code)
-    
+
     next_line = liseur_code(jump_line, Defer(1, lambda:jump_flag), curr_line)
 
     #registres
@@ -67,13 +67,13 @@ def main():
     value1, value2, resultat_precedent_nul, resultat_precedent_neg, operation = interf_alu(value_reg1, value_reg2, entier, Defer(1, lambda:resultat_nul), Defer(1, lambda:resultat_neg), operation_brute)
 
     resultat, resultat_nul, resultat_neg = alu(value1, value2, operation)
-    
+
 
     #écriture
     write_data_reg = Mux(sauver_resultat_alu, Defer(16, lambda:autre_sauv), resultat)
-    
+
     ram_addr = resultat
-    
+
     rom_input = ROM(rom2_addr_size, rom2_word_size, resultat[(16-rom2_word_size):16])
 
     ram_value = RAM(ram_addr_size, ram_word_size, resultat[6:16], write_enable_ram, resultat[6:16], value_reg2)
@@ -85,14 +85,12 @@ def main():
     batonnage.set_as_output("maj_ecran")
     batons = Mux(batonnage, Constant("0"*16), sept_batons(value_reg2))
     ram_batons = RAM(addr_size_batons, word_size_batons, resultat[6:16], batonnage, resultat[6:16], batons)
-    
+
 
     #gestion de la real_clock
     real_clock = Input(1)
     rclock_bus = Constant("0"*15) + real_clock
-    
+
     autre_sauv_interm = Mux(lire_la_rom, ram_value, rom_input)
     autre_sauv = Mux(lire_la_clock, autre_sauv_interm, rclock_bus)
-
-
 
