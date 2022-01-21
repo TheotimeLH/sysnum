@@ -1,4 +1,4 @@
-all: mk_get_real_time
+all: mk_get_real_time mk_microproc
 
 mk_get_real_time: 
 	rm -f get_real_time
@@ -16,6 +16,10 @@ get_real_time:
 init_time: get_real_time
 	./get_real_time
 
+mk_microproc:
+	rm -f microproc.exe
+	make microproc.exe
+
 microproc.exe:
 	cp -r ../netlist_python ../carotte.py/netlist_python
 	cd ../carotte.py; \
@@ -29,5 +33,5 @@ microproc.exe:
 clean:
 	rm -f get_real_time rom_input.txt
 
-.PHONY: mk_get_real_time init_time
+.PHONY: mk_get_real_time mk_microproc init_time
 

@@ -5,10 +5,17 @@ netlist_compiler:
 	rm -f $@
 	cp _build/default/netlist_compiler.exe $@
 
-.PRECIOUS: %.ml
+.PRECIOUS: %.ml affiche
 
-%.exe: %.ml
-	ocamlopt $< -o $@ && rm ${patsubst %.exe, %.o,$@} ${patsubst %.exe, %.cmx,$@}${patsubst %.exe, %.cmi,$@}
+affiche:
+	ocamlfind ocamlopt -o affiche -linkpkg -package graphics graphics.cmxa affiche.ml
+
+
+%.exe: %.ml affiche
+	ocamlfind ocamlopt -c -linkpkg -package graphics graphics.cmxa $<
+	ocamlfind ocamlopt -o $@ -linkpkg -package graphics graphics.cmxa affiche.cmx ${patsubst %.exe, %.cmx,$@}
+	rm affiche affiche.cmi affiche.cmx affiche.o
+	rm ${patsubst %.exe, %.o,$@} ${patsubst %.exe, %.cmx,$@}${patsubst %.exe, %.cmi,$@}
 
 %.ml: %.net netlist_compiler 
 	./netlist_compiler $<
