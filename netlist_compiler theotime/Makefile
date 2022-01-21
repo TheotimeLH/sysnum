@@ -8,12 +8,12 @@ netlist_compiler:
 .PRECIOUS: %.ml affiche
 
 affiche:
-	ocamlfind ocamlopt -o affiche -linkpkg -package graphics graphics.cmxa affiche.ml
+	ocamlfind ocamlopt -g -o affiche -linkpkg -package graphics graphics.cmxa affiche.ml
 
 
 %.exe: %.ml affiche
-	ocamlfind ocamlopt -c -linkpkg -package graphics graphics.cmxa $<
-	ocamlfind ocamlopt -o $@ -linkpkg -package graphics graphics.cmxa affiche.cmx ${patsubst %.exe, %.cmx,$@}
+	ocamlfind ocamlopt -g -c -linkpkg -package graphics graphics.cmxa $<
+	ocamlfind ocamlopt -g -o $@ -linkpkg -package graphics graphics.cmxa affiche.cmx ${patsubst %.exe, %.cmx,$@}
 	rm affiche affiche.cmi affiche.cmx affiche.o
 	rm ${patsubst %.exe, %.o,$@} ${patsubst %.exe, %.cmx,$@}${patsubst %.exe, %.cmi,$@}
 
