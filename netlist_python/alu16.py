@@ -45,7 +45,7 @@ def alu(a, b, op):
 
     def incr(a):
         b = Constant("1")
-        for i in range(16):
+        for i in range(15):
             c = a[15-i] & b[0]
             b = c + b
         return a ^ b
