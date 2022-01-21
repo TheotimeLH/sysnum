@@ -9,17 +9,17 @@ def baton(d):
     even = ~odd
 
     b1 = ~(d[1] | d[3])
-    b2 = ~(d[2] | d[3])
-    b3 = ~d[1] | odd
-    b4 = ~d[3] & d[2]
-    b5 = d[2] | even
-    b6 = d[1] ^ d[2]
-    b7 = ~b4 | even
+    b5 = ~(d[2] | d[3])
+    b7 = ~d[1] | odd
+    b3 = ~d[3] & d[2]
+    b6 = d[2] | even
+    b4 = d[1] ^ d[2]
+    b2 = ~b4 | even
 
-    r = b1+b2+b3+b4+b5+b6+b7
-    r56 = d[2] + un(1) + b3 + un(4)
-    r07 = Mux(b3, r56, r047)
-    r89 = ~d[3] + un(6)
+    r = b7+b6+b5+b4+b3+b2+b1
+    r56 = z(1) + un(5) + d[2]
+    r07 = Mux(b7, r56, r047)
+    r89 = un(6) + ~d[3]
     r09 = Mux(d[0], r07, r89)
     return r09
 
