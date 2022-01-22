@@ -203,7 +203,9 @@ let compiler filename p =
 		"\t\tt_reg.("^ (snum a) ^") <- var_"^ b ^" () ;\n" in
 	output_string cfile (String.concat "" (List.map mk_reg !l_regs)) ;
 
+  let num_ram_ecran = ref 0 in
 	let mk_ram (id,w_e,w_a,w_d) =
+    if w_e = Avar "maj_ecran" then num_ram_ecran := num id ;
 		"\t\tif snd ("^ (sarg w_e) ^") > 0 then t_rams.("^ (snum id) ^").(snd("
 		^ (sarg w_a) ^")) <- "^ (sarg w_d) ^ " ;\n" in
 	output_string cfile (String.concat "" (List.map mk_ram !l_rams)) ;
@@ -216,7 +218,7 @@ let compiler filename p =
   if !doit_affiche_batons then output_string cfile
     ("\n\t\t (* Cas spécial, où on a demandé à utiliser des sept_batons : *) \n\
     \t\tif snd (var_maj_ecran ()) = 1 then (\n\
-    \t\tlet ram = t_rams.(" ^ "2422" ^ ") in \n\
+    \t\tlet ram = t_rams.(" ^ (string_of_int !num_ram_ecran) ^ ") in \n\
     \t\t\tAffiche.affiche_batons (snd ram.(0)) (snd ram.(1)) (snd ram.(2)) \n\
     \t\t\t\t(snd ram.(3)) (snd ram.(4)) (snd ram.(5)) (snd ram.(6)) )  ;\n") ;
 
