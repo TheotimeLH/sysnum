@@ -8,6 +8,7 @@ from netlist_python.decodeur import decodeur
 from netlist_python.batonneur import batonneur as sept_batons
 
 allow_ribbon_logic_operations(True)
+DEBOGUE_MODE = False
 
 def main():
     #initialisation
@@ -93,4 +94,41 @@ def main():
 
     autre_sauv_interm = Mux(lire_la_rom, ram_value, rom_input)
     autre_sauv = Mux(lire_la_clock, autre_sauv_interm, rclock_bus)
+
+    if DEBOGUE_MODE :
+        next_step = Input(1)
+        next_step.set_as_output("j_espere_que_le_debogue_marche")
+        curr_line.set_as_output("ligne_actuelle")
+        jump_flag.set_as_output("jump_flag")
+        entier.set_as_output("entier")
+        operation_brute.set_as_output("operation_brute")
+        read_addr1.set_as_output("registre1")
+        read_addr2.set_as_output("registre2")
+        write_addr_reg.set_as_output("add_ecriture_reg")
+        write_enable_ram.set_as_output("write_enable_reg")
+        write_enable_ram.set_as_output("write_enable_ram")
+        lire_la_clock.set_as_output("lecture_clock")
+        lire_la_rom.set_as_output("lecture_rom")
+        sauver_resultat_alu.set_as_output("sauvegarde_resultat_alu")
+        batonnage2 = ~(~batonnage)
+        batonnage2.set_as_output("batonnage")
+        value_reg1.set_as_output("valeur_reg1")
+        value_reg2.set_as_output("valeur_reg2")
+        value1.set_as_output("operande1")
+        value2.set_as_output("operande2")
+        operation.set_as_output("operation_realisee")
+        resultat.set_as_output("resultat")
+        write_data_reg.set_as_output("valeur_enregistree_registres")
+        ram_value.set_as_output("valeur_lue_ram")
+        rom_input.set_as_output("valeur_lue_rom")
+        batons.set_as_output("batons")
+        real_clock.set_as_output("real_clock")
+        
+        
+
+
+
+
+
+
 

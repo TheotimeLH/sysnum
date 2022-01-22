@@ -48,7 +48,7 @@ def decodeur(code) :
     write_enable_reg = ~(c0 | write_enable_ram ) | lire_la_clock
    
     #chargement ou calcul
-    sauver_resultat_alu = (c0 ^ c1) & c2 #catégorie rom ram ou clock
+    sauver_resultat_alu = ~((c0 ^ c1) & c2) #catégorie rom ram ou clock
 
     batonnage = c0 & ~c1 & c2 & c5 & ~c6
 
