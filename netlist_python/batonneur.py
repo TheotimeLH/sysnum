@@ -11,7 +11,7 @@ def baton(d):
     b1 = ~(d[1] | d[3])
     b5 = ~(d[2] | d[3])
     b7 = ~d[1] | odd
-    b3 = ~d[3] & d[2]
+    b3 = ~d[3] | d[2]
     b6 = d[2] | even
     b4 = d[1] ^ d[2]
     b2 = ~b3 | even
@@ -23,19 +23,19 @@ def baton(d):
     r09 = Mux(d[0], r07, r89)
     return r09
 
-dix = Constant("00010100001")
-vingt = Constant("00101000010")
-trente = Constant("00111100011")
-quar = Constant("01010000100")
-cinq = Constant("01100100101")
-soix = Constant("01111000110")
-sept = Constant("10001100111")
-octt = Constant("10100001000")
-nont = Constant("10110101001")
+dix = Constant("000010100001")
+vingt = Constant("000101000010")
+trente = Constant("000111100011")
+quar = Constant("001010000100")
+cinq = Constant("001100100101")
+soix = Constant("001111000110")
+sept = Constant("010001100111")
+octt = Constant("010100001000")
+nont = Constant("010110101001")
 
 def geq(x, y):
     b = un(1)
-    for i in range(6, -1, -1):
+    for i in range(7, -1, -1):
         m = x[i] ^ y[i]
         b = Mux(m, b, x[i])
     return b
@@ -45,25 +45,26 @@ def sub(a, b, r):
     return t^r, Mux(t, r, b)
 
 def sub7(a, b):
-    s, r = sub(a[6], b[6], z(1))
-    for i in range(5, -1, -1):
+    s, r = sub(a[7], b[7], z(1))
+    for i in range(6, -1, -1):
         c, r = sub(a[i], b[i], r)
         s = c + s
     return s
 
 def batonneur(a):
+    a8 = a[8:16]
 
-    m1 = geq(a, dix)
-    m2 = geq(a, vingt)
-    m3 = geq(a, trente)
-    m4 = geq(a, quar)
-    m5 = geq(a, cinq)
-    m6 = geq(a, soix)
-    m7 = geq(a, sept)
-    m8 = geq(a, octt)
-    m9 = geq(a, nont)
+    m1 = geq(a8, dix)
+    m2 = geq(a8, vingt)
+    m3 = geq(a8, trente)
+    m4 = geq(a8, quar)
+    m5 = geq(a8, cinq)
+    m6 = geq(a8, soix)
+    m7 = geq(a8, sept)
+    m8 = geq(a8, octt)
+    m9 = geq(a8, nont)
 
-    d01 = Mux(m1, z(11), dix)
+    d01 = Mux(m1, z(12), dix)
     d23 = Mux(m3, vingt, trente)
     d45 = Mux(m5, quar, cinq)
     d67 = Mux(m7, soix, sept)
@@ -74,9 +75,9 @@ def batonneur(a):
     d = Mux(m2, d01, d29)
 
     u = sub7(a, d)
-    cu = u[3:7]
-    cd = d[7:11]
+    cu = u[4:8]
+    cd = d[8:12]
     bu = baton(cu)
     bd = baton(cd)
-    return un(2) + bd + bu
+    return un(2) + bu + bd
 
