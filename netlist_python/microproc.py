@@ -8,7 +8,7 @@ from netlist_python.decodeur import decodeur
 from netlist_python.batonneur import batonneur as sept_batons
 
 allow_ribbon_logic_operations(True)
-DEBOGUE_MODE = False
+DEBOGUE_MODE = True
 
 def main():
     #initialisation
@@ -29,12 +29,10 @@ def main():
     def liseur_code(jump_line, jump_flag, line_incr) :
         def incr_line(a):
             b = Constant("1")
-            s = a[0] ^ b
-            b = a[0] & b
-            for i in range(1, prog_rom_addr_size):
-                s = s + (a[i] ^ b)
-                b = a[i] & b
-            return s
+            for i in range(prog_rom_addr_size - 1):
+                c = a[prog_rom_addr_size - i -1] & b[0]
+                b = c + b
+            return a ^ b
         line_plus = incr_line(curr_line)
         next_line = Mux(jump_flag, line_plus, jump_line)
         return next_line
@@ -105,7 +103,7 @@ def main():
         read_addr1.set_as_output("registre1")
         read_addr2.set_as_output("registre2")
         write_addr_reg.set_as_output("add_ecriture_reg")
-        write_enable_ram.set_as_output("write_enable_reg")
+        write_enable_reg.set_as_output("write_enable_reg")
         write_enable_ram.set_as_output("write_enable_ram")
         lire_la_clock.set_as_output("lecture_clock")
         lire_la_rom.set_as_output("lecture_rom")

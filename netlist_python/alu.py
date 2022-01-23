@@ -61,7 +61,8 @@ def alu(a, b, op):
 
     # Main
 
-    c0 = zero(16)
+    #c0 = zero(16)
+    c0 = b # l’opération 0000 devient l’identité sur le deuxième arg
     c1, debordement = n_adder(a, b)
     c2 = mult(a, b)
     c3, debordement_flotant = sub(a, b)
