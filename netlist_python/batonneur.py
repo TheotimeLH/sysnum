@@ -78,5 +78,5 @@ def batonneur(a):
     cd = d[7:11]
     bu = baton(cu)
     bd = baton(cd)
-    return un(16)
+    return un(2) + bd + bu
 
