@@ -18,9 +18,9 @@ SIMPLEA = "0"
 		ocamlopt -o affiche graphics.cmxa affiche.ml
 		ocamlopt -o $@ graphics.cmxa affiche.cmx $<
   else
-		ocamlfind ocamlopt -g -o affiche -linkpkg -package graphics graphics.cmxa affiche.ml
-		ocamlfind ocamlopt -g -c -linkpkg -package graphics graphics.cmxa $<
-		ocamlfind ocamlopt -g -o $@ -linkpkg -package graphics graphics.cmxa affiche.cmx ${patsubst %.exe, %.cmx,$@}
+		ocamlfind ocamlopt -O3 -g -o affiche -linkpkg -package graphics graphics.cmxa affiche.ml
+		ocamlfind ocamlopt -O3 -g -c -linkpkg -package graphics graphics.cmxa $<
+		ocamlfind ocamlopt -O3 -g -o $@ -linkpkg -package graphics graphics.cmxa affiche.cmx ${patsubst %.exe, %.cmx,$@}
   endif
 	rm affiche affiche.cmi affiche.cmx affiche.o
 	rm ${patsubst %.exe, %.o,$@} ${patsubst %.exe, %.cmx,$@}${patsubst %.exe, %.cmi,$@}

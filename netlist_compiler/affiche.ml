@@ -49,6 +49,8 @@ let m0 = ref 0
 let al0 = ref 0
 let ar0 = ref 0
 
+let affiche_sec = true
+
 let affiche_batons
   s (* secondes *)
   mi (* minutes *)
@@ -64,7 +66,7 @@ let affiche_batons
   else if mi <> !m1 then (
   moveto 800 600 ;
   print16 !m1 mi )
-  else if s <> !s0 then (
+  else if affiche_sec && s <> !s0 then (
   moveto 1300 600 ;
   print16 !s0 s )
   else if j <> !j0 then (
