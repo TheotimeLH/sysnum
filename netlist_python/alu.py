@@ -83,7 +83,7 @@ def alu(a, b, op):
     d7 = Mux(op[1], d5, d6)
     d8 = Mux(op[0], d7, d4)
     d9 = nul(d8)
-    return (d8, d9, d8[15])
+    return (d8, d9, d8[0])
 
 # DEBUG #
 

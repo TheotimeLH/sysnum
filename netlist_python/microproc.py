@@ -37,15 +37,13 @@ def main():
         next_line = Mux(jump_flag, line_plus, jump_line)
         return next_line
 
-    def interf_alu(value_reg1, value_reg2, entier, resultat_nul, resultat_neg, operation_brute) :
-        def decode_op(operation_brute) :
-            return operation_brute[0:4], ~(operation_brute[4])
+    def interf_alu(value_reg1, value_reg2, entier, resultat_nul, resultat_neg, operation_brute, operande_gauche, operande_droit) :
 
-        operation, op_entier = decode_op(operation_brute)
+        operation = operation_brute[0:4]
         resultat_precedent_nul = Reg(resultat_nul)
         resultat_precedent_neg = Reg(resultat_neg)
-        value1 = value_reg1
-        value2 = Mux(op_entier, value_reg2, entier)
+        value1 = Mux(operande_gauche, value_reg1, value_reg2)
+        value2 = Mux(operande_droit, value_reg1, entier)
         return value1, value2, resultat_precedent_nul, resultat_precedent_neg, operation
 
 
@@ -54,7 +52,7 @@ def main():
     curr_line = Reg(Defer(prog_rom_addr_size, lambda:next_line))
     curr_code = ROM(prog_rom_addr_size, prog_rom_word_size, curr_line)
 
-    jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage, lire_la_rom = decodeur(curr_code)
+    jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage, lire_la_rom, operande_gauche, operande_droit = decodeur(curr_code)
 
     next_line = liseur_code(jump_line, Defer(1, lambda:jump_flag), curr_line)
 
@@ -62,7 +60,7 @@ def main():
     value_reg1, value_reg2 = gestion_registres(read_addr1, read_addr2, write_addr_reg, write_enable_reg, Defer(reg_size, lambda:write_data_reg))
 
     #calcul
-    value1, value2, resultat_precedent_nul, resultat_precedent_neg, operation = interf_alu(value_reg1, value_reg2, entier, Defer(1, lambda:resultat_nul), Defer(1, lambda:resultat_neg), operation_brute)
+    value1, value2, resultat_precedent_nul, resultat_precedent_neg, operation = interf_alu(value_reg1, value_reg2, entier, Defer(1, lambda:resultat_nul), Defer(1, lambda:resultat_neg), operation_brute, operande_gauche, operande_droit)
 
     resultat, resultat_nul, resultat_neg = alu(value1, value2, operation)
 
@@ -110,8 +108,9 @@ def main():
         sauver_resultat_alu.set_as_output("sauvegarde_resultat_alu")
         batonnage2 = ~(~batonnage)
         batonnage2.set_as_output("batonnage")
-        value_reg1.set_as_output("valeur_reg1_operande1")
+        value_reg1.set_as_output("valeur_reg1")
         value_reg2.set_as_output("valeur_reg2")
+        value1.set_as_output("operande1")
         value2.set_as_output("operande2")
         operation.set_as_output("operation_realisee")
         resultat.set_as_output("resultat")

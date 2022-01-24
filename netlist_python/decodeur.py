@@ -18,6 +18,9 @@ def decodeur(code) :
     c6 = commande[6]
     c7 = commande[7]
 
+    #gestion du set
+    op_set_entier = ~c0 & ~c1 & c2 & c5 & ~c6
+
     #gestion des sauts
     sautage = c0 & ~(c1 | c2)
     jump_flag_inconditionnel = Mux(sautage, zero, (~c3 & ~c4 & ~c5 & c6))
@@ -28,15 +31,19 @@ def decodeur(code) :
     
     jump_line = entier[6:16]
  
- 
+     
     #operation brute
     operation_op = commande[3:8]
     operation_ram = Constant("0001") + c7
     operation_pas_doperation = Constant("00000")
-    pas_de_calcul = (~c0 & ~c1 & c2) | (c0 & ~c1 & ~c2) | Defer(1, lambda:lire_la_clock)
-    calcul_daddresse = (~c0 & c1 & c2 ) | (c0 & ~c1 & c2 & c5 & ~c6 & c7) 
-    operation = Mux(calcul_daddresse, operation_op, operation_ram)
+    pas_de_calcul = (~c0 & ~c1 & c2 & ~(op_set_entier)) | (c0 & ~c1 & ~c2) | Defer(1, lambda:lire_la_clock)
+    calcul_daddresse = (~c0 & c1 & c2 ) | (c0 & ~c1 & c2) 
+    operation = Mux((calcul_daddresse | op_set_entier), operation_op, operation_ram)
     operation_brute = Mux(pas_de_calcul, operation, operation_pas_doperation)
+
+    #calcul des operandes
+    operande_gauche = ~(calcul_daddresse | op_set_entier) #vaut 1 si r2, 0 si r1
+    operande_droit = (~c7  & ~c0 & c1 & ~c2) | calcul_daddresse #1 si entier, 0 si r1
 
     #indicatrice de "lecture de la clock", rom d’entrée
     lire_la_clock = c0 & ~c1 & c2 & ~c5 & c6
@@ -52,7 +59,7 @@ def decodeur(code) :
 
     batonnage = c0 & ~c1 & c2 & c5 & ~c6
 
-    return jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage, lire_la_rom
+    return jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage, lire_la_rom, operande_gauche, operande_droit
 
 
 
