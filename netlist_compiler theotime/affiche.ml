@@ -58,28 +58,27 @@ let affiche_batons
   al (* millénaire + centenaire *) 
   ar (* décennie + année *) =
 
-  if s <> !s0 then begin
+  if h <> !h0 then (
   moveto 300 600 ;
-  print16 !s0 s ;
-  if mi <> !m1 then begin
+  print16 !h0 h )
+  else if mi <> !m1 then (
   rmoveto 200 0 ;
-  print16 !m1 mi ;
-  if h <> !h0 then begin
+  print16 !m1 mi )
+  else if s <> !s0 then (
   rmoveto 200 0 ;
-  print16 !h0 h ;
-  if j <> !j0 then begin
+  print16 !s0 s )
+  else if j <> !j0 then (
   moveto 100 250 ;
-  print16 !j0 j ;
-  if mo <> !m0 then begin
+  print16 !j0 j )
+  else if mo <> !m0 then (
+    rmoveto 200 0 ;
+  print16 !m0 mo )
+  else if al <> !al0 then (
   rmoveto 200 0 ;
-  print16 !m0 mo ;
-  if al <> !al0 then begin
-  rmoveto 200 0 ;
-  print16 !al0 al ;
-  if ar <> !ar0 then begin
+  print16 !al0 al )
+  else if ar <> !ar0 then (
   rmoveto 100 0 ;
-  print16 !ar0 ar 
-  end end end end end end end ;
+  print16 !ar0 ar ) ;
 
   s0 := s ;
   m1 := mi ;

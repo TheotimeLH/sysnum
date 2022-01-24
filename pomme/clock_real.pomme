@@ -16,16 +16,23 @@
 */
 		
 load_rom (0) r1 // Les secondes
+sept_batons r1 (0)
 load_rom (1) r2 // Les minutes
+sept_batons r2 (1)
 load_rom (2) r3 // Les heures
+sept_batons r3 (2)
 
 // Le jour actuel, entre 0 et 30.
 load_rom (3) r4
 save r4 (0) 
+add 1 r4
+sept_batons r4 (3) // Jour + 1 pour aller de 1 à 31
 
 // Le mois entre 0 et 11
 load_rom (4) r4
 save r4 (1) 
+add 1 r4                                                                 
+sept_batons r4 (4)
 
 /* L'année :
 	 Un nombre en batons vaut au plus 99, donc je coupe l'année en deux,
@@ -33,8 +40,10 @@ save r4 (1)
 	 Je garde aussi en mémoire l'année mod 4, pour les années bissextiles. */
 load_rom (5) r4 // Les deux premiers chiffres, de poids forts
 save r4 (2)
+sept_batons r4 (5)
 load_rom (6) r4 // Les deux derniers, de poids faibles
 save r4 (3)
+sept_batons r4 (6)
 
 // Je calcule à la main année mod 4 une fois pour l'initialisation.
 // rem : pour connaitre année mod 4, les deux chiffres de poids 
