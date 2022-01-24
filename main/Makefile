@@ -28,11 +28,11 @@ microproc.exe:
 		python3 carotte.py -o ../main/microproc.net netlist_python/microproc.py; \
 		rm -r netlist_python/
 ifeq ($(SIMPLE),"0")
-	cd ../netlist_compiler\ theotime; \
+	cd ../netlist_compiler; \
 		make ../main/microproc.exe; \
 		make clean
 else 
-	cd ../netlist_compiler\ theotime; \
+	cd ../netlist_compiler; \
 		make ../main/microproc.exe SIMPLEA="1";\
 		make clean
 endif
@@ -43,7 +43,7 @@ clean_microproc:
 clean: clean_microproc clean_time
 	cd ../pomme; \
 		make clean
-	cd ../netlist_compiler\ theotime; \
+	cd ../netlist_compiler; \
 		make clean
 
 pomme_real:
