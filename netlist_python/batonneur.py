@@ -11,7 +11,7 @@ def baton(d):
     b1 = ~(d[1] | d[3])
     b5 = ~(d[2] | d[3])
     b7 = ~d[1] | odd
-    b3 = ~d[3] | d[2]
+    b3 = ~d[2] | d[3]
     b6 = d[2] | even
     b4 = d[1] ^ d[2]
     b2 = ~b3 | even
@@ -74,7 +74,7 @@ def batonneur(a):
     d29 = Mux(m6, d25, d69)
     d = Mux(m2, d01, d29)
 
-    u = sub7(a, d)
+    u = sub7(a8, d)
     cu = u[4:8]
     cd = d[8:12]
     bu = baton(cu)

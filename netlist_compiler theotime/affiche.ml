@@ -62,22 +62,22 @@ let affiche_batons
   moveto 300 600 ;
   print16 !h0 h )
   else if mi <> !m1 then (
-  rmoveto 200 0 ;
+  moveto 800 600 ;
   print16 !m1 mi )
   else if s <> !s0 then (
-  rmoveto 200 0 ;
+  moveto 1300 600 ;
   print16 !s0 s )
   else if j <> !j0 then (
   moveto 100 250 ;
   print16 !j0 j )
   else if mo <> !m0 then (
-    rmoveto 200 0 ;
+  moveto 600 250 ;
   print16 !m0 mo )
   else if al <> !al0 then (
-  rmoveto 200 0 ;
+  moveto 1100 250 ;
   print16 !al0 al )
   else if ar <> !ar0 then (
-  rmoveto 100 0 ;
+  moveto 1500 250 ;
   print16 !ar0 ar ) ;
 
   s0 := s ;
