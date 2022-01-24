@@ -18,8 +18,10 @@ def decodeur(code) :
     c6 = commande[6]
     c7 = commande[7]
 
-    #gestion du set
-    op_set_entier = ~c0 & ~c1 & c2 & c5 & ~c6
+    #gestion du set et du move
+    op_move_ou_set = ~c0 & ~c1 & c2 
+    op_set_entier = op_move_ou_set & c5 & ~c6
+    op_move = op_move_ou_set & ~op_set_entier
 
     #gestion des sauts
     sautage = c0 & ~(c1 | c2)
@@ -42,7 +44,7 @@ def decodeur(code) :
     operation_brute = Mux(pas_de_calcul, operation, operation_pas_doperation)
 
     #calcul des operandes
-    operande_gauche = ~(calcul_daddresse | op_set_entier) #vaut 1 si r2, 0 si r1
+    operande_gauche = ~(calcul_daddresse | op_set_entier |op_move) #vaut 1 si r2, 0 si r1
     operande_droit = (~c7  & ~c0 & c1 & ~c2) | calcul_daddresse | op_set_entier #1 si entier, 0 si r1
 
     #indicatrice de "lecture de la clock", rom d’entrée

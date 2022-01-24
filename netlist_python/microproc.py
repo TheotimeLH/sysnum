@@ -8,7 +8,7 @@ from netlist_python.decodeur import decodeur
 from netlist_python.batonneur import batonneur as sept_batons
 
 allow_ribbon_logic_operations(True)
-DEBOGUE_MODE = True
+DEBOGUE_MODE = False
 
 def main():
     #initialisation
