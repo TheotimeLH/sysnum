@@ -18,6 +18,7 @@ clean_time:
 
 
 SIMPLE = "0"
+SILENCE = "1"
 
 mk_microproc: clean_microproc microproc.exe
 
@@ -41,5 +42,26 @@ clean_microproc:
 
 clean: clean_microproc clean_time
 
-.PHONY: mk_get_real_time mk_microproc init_time
+pomme_real:
+	cd ../pomme; \
+		make clk_real  
+clock_real: microproc.exe pomme_real init_time
+  ifeq ($(SILENCE),"1")
+		./microproc.exe -s -roms rom_input.txt ../pomme/clock_real.txt
+  else
+		./microproc.exe -roms rom_input.txt ../pomme/clock_real.txt
+  endif
+
+pomme_quick:
+	cd ../pomme; \
+		make clk_quick  
+clock_quick: microproc.exe pomme_quick init_time
+  ifeq ($(SILENCE),"1")
+		./microproc.exe -s -roms rom_input.txt ../pomme/clock_quick.txt
+  else
+		./microproc.exe -roms rom_input.txt ../pomme/clock_quick.txt
+  endif
+	
+
+.PHONY: mk_get_real_time mk_microproc pomme_real pomme_quick init_time
 
