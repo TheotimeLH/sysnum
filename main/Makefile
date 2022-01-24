@@ -41,6 +41,10 @@ clean_microproc:
 	rm -f microproc.exe microproc.ml microproc.net
 
 clean: clean_microproc clean_time
+	cd ../pomme; \
+		make clean
+	cd ../netlist_compiler\ theotime; \
+		make clean
 
 pomme_real:
 	cd ../pomme; \

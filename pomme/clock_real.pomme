@@ -97,11 +97,13 @@ Save_nb_mois:
 
 Attente0:
 	move_real_clock rck
+	and $rck rck
 	jump_non_nul Attente0
 	jump Corps
 
 Attente1:
 	move_real_clock rck
+	and $rck rck
 	jump_nul Attente1
 	jump Corps
 

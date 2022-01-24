@@ -114,7 +114,7 @@ let produit filename dlignes =
       with _ -> raise (Prod_error {loc = dl.loc ; msg = "Ce label n'existe pas."}) )
 
     (* Catégorie 101: pour les horloges *)
-    | Move_real_clock(r1) -> "101"^"0001"^"0" ^ _16 ^ (bin_r r1) ^ _4
+    | Move_real_clock(r1) -> "101"^"0001"^"0" ^ _16 ^ _4 ^ (bin_r r1)
     | Sept_batons(r1,(Some r2,n)) -> "101"^"0010"^"1" ^ (bin_e dl.loc n) ^ (bin_r r2) ^ (bin_r r1)
     | Sept_batons(r1,(None,n)) -> "101"^"0010"^"0" ^ (bin_e dl.loc n) ^ _4 ^ (bin_r r1)
   in
