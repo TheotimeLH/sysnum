@@ -31,10 +31,10 @@ def decodeur(code) :
  
     #operation brute
     operation_op = commande[3:8]
-    operation_ram = Constant("00011")
+    operation_ram = Constant("0001") + c7
     operation_pas_doperation = Constant("00000")
-    pas_de_calcul = (~c0 & ~c1 & c2) | (~c0 & c1 & c2 & c7) | (c0 & ~c1 & ~c7)
-    calcul_daddresse = (~c0 & c1 & c2 & ~c7) | (c0 & ~c1 & c2 & c5 & ~c6 & c7) 
+    pas_de_calcul = (~c0 & ~c1 & c2) | (c0 & ~c1 & ~c2) | Defer(1, lambda:lire_la_clock)
+    calcul_daddresse = (~c0 & c1 & c2 ) | (c0 & ~c1 & c2 & c5 & ~c6 & c7) 
     operation = Mux(calcul_daddresse, operation_op, operation_ram)
     operation_brute = Mux(pas_de_calcul, operation, operation_pas_doperation)
 
@@ -48,7 +48,7 @@ def decodeur(code) :
     write_enable_reg = ~(c0 | write_enable_ram ) | lire_la_clock
    
     #chargement ou calcul
-    sauver_resultat_alu = ~((c0 ^ c1) & c2) #catégorie rom ram ou clock
+    sauver_resultat_alu = ~((c0 ^ c1) & c2) #catégorie différente de rom ram ou clock
 
     batonnage = c0 & ~c1 & c2 & c5 & ~c6
 

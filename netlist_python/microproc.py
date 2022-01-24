@@ -39,14 +39,13 @@ def main():
 
     def interf_alu(value_reg1, value_reg2, entier, resultat_nul, resultat_neg, operation_brute) :
         def decode_op(operation_brute) :
-            return operation_brute[0:4], operation_brute[4]
+            return operation_brute[0:4], ~(operation_brute[4])
 
-        code_operation, op_entier = decode_op(operation_brute)
+        operation, op_entier = decode_op(operation_brute)
         resultat_precedent_nul = Reg(resultat_nul)
         resultat_precedent_neg = Reg(resultat_neg)
         value1 = value_reg1
         value2 = Mux(op_entier, value_reg2, entier)
-        operation, op_entier = decode_op(operation_brute)
         return value1, value2, resultat_precedent_nul, resultat_precedent_neg, operation
 
 
@@ -78,7 +77,7 @@ def main():
     ram_value = RAM(ram_addr_size, ram_word_size, resultat[6:16], write_enable_ram, resultat[6:16], value_reg2)
 
     #drapeau de saut
-    jump_flag = jump_flag_inconditionnel | (jump_flag_neg & resultat_precedent_neg) | (jump_flag_nul & resultat_precedent_nul)
+    jump_flag = jump_flag_inconditionnel | (jump_flag_neg & resultat_precedent_neg) | (jump_flag_nul & resultat_precedent_nul) | (jump_flag_non_neg & ~resultat_precedent_neg)| (jump_flag_non_nul & ~resultat_precedent_nul)
 
     #gestions des batons et de la ram à batons
     batonnage.set_as_output("maj_ecran")
@@ -90,6 +89,8 @@ def main():
     real_clock = Input(1)
     rclock_bus = Constant("0"*15) + real_clock
 
+
+    #sauvegarde dans les registres
     autre_sauv_interm = Mux(lire_la_rom, ram_value, rom_input)
     autre_sauv = Mux(lire_la_clock, autre_sauv_interm, rclock_bus)
 
@@ -101,8 +102,7 @@ def main():
         entier.set_as_output("entier")
         operation_brute.set_as_output("operation_brute")
         read_addr1.set_as_output("registre1")
-        read_addr2.set_as_output("registre2")
-        write_addr_reg.set_as_output("add_ecriture_reg")
+        read_addr2.set_as_output("registre2_et_add_ecriture")
         write_enable_reg.set_as_output("write_enable_reg")
         write_enable_ram.set_as_output("write_enable_ram")
         lire_la_clock.set_as_output("lecture_clock")
@@ -110,9 +110,8 @@ def main():
         sauver_resultat_alu.set_as_output("sauvegarde_resultat_alu")
         batonnage2 = ~(~batonnage)
         batonnage2.set_as_output("batonnage")
-        value_reg1.set_as_output("valeur_reg1")
+        value_reg1.set_as_output("valeur_reg1_operande1")
         value_reg2.set_as_output("valeur_reg2")
-        value1.set_as_output("operande1")
         value2.set_as_output("operande2")
         operation.set_as_output("operation_realisee")
         resultat.set_as_output("resultat")
