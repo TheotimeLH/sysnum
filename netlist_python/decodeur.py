@@ -43,7 +43,7 @@ def decodeur(code) :
 
     #calcul des operandes
     operande_gauche = ~(calcul_daddresse | op_set_entier) #vaut 1 si r2, 0 si r1
-    operande_droit = (~c7  & ~c0 & c1 & ~c2) | calcul_daddresse #1 si entier, 0 si r1
+    operande_droit = (~c7  & ~c0 & c1 & ~c2) | calcul_daddresse | op_set_entier #1 si entier, 0 si r1
 
     #indicatrice de "lecture de la clock", rom d’entrée
     lire_la_clock = c0 & ~c1 & c2 & ~c5 & c6
