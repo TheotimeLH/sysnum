@@ -1,9 +1,0 @@
-(executables
- (names compilateur_netlist)
- (libraries unix)
- (modes byte exe))
-
-(menhir
- (modules netlist_parser))
-
-(ocamllex netlist_lexer)
