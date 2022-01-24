@@ -40,10 +40,10 @@ save r4 (3)
 // rem : pour connaitre année mod 4, les deux chiffres de poids 
 // faibles suffisent en base 10
 Moins4:
-	move r4 rbx
 	sub 4 r4
 	jump_non_neg Moins4
-	save rbx (4)
+	add 4 r4
+	save r4 (4)
 
 // Ensuite il faut sauvegarder le nombre de jours de chaque mois.
 // Je traite février en année bissextile plus tard.
