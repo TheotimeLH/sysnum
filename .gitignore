@@ -2,3 +2,7 @@
 *.native
 *.swp
 _build
+*.exe
+__pycache__
+dune-project
+*.txt
