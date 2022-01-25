@@ -15,6 +15,8 @@ Le simulateur utilisé est fondé sur celui de Théotime, qui compile les netlis
 
 Le microprocesseur a été créé avec l’outil `Carotte.py`, vous le trouverez, ainsi que son README, dans le dossier `netlist_python`.
 
+Le README contient l’architecture du microprocesseur et une explication de son fonctionnement
+
 ### Langage assembleur
 
 Notre assembleur, qui répond au doux prénom de « pomme » a été inventé par nous-mêmes. Tous les détails le concernant (parser, lexer, et transcription en binaire) sont disponibles dans le README du dossier `pomme`.
