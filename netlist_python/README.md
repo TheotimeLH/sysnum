@@ -30,6 +30,10 @@ Le microprocesseur est constitué des éléments suivants :
 
 Nous allons détailler le rôle de chacun de ces composants.
 
+
+### Corps du microprocesseur
+Le microprocesseur coordonne toutes les fonctions définies ensuites. Son fonctionnement est assez intuitif.
+
 ### Lecteur de code
 
 - Entrées :
