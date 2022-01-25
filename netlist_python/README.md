@@ -88,8 +88,24 @@ De plus, si l’adresse de lecture commence par 0 (registre non existant, ou reg
 
 
 
+### Interface de l’alu
 
+- Entrées :
+	- `value_reg1`
+	- `value_reg2`
+	- `entier`
+	- `resultat_nul` -> indicateur que le résultat de l’alu est nul
+	- `resultat_neg` -> indicateur que le résultat de l’alu est négatif
+	- `operation_brute` -> le code de l’opération, sur 5 bits
+	- `operande_droit`
+	- `operande_gauche` 
 
+- Sorties :
+	- `value_1` -> la valeur de l’opérande de gauche
+	- `value_2` -> la valeur de l’opérande de droite
+	- `resultat_precedent_nul` -> indicateur que le résultat du calcul au tour précédent était nul
+	- `resultat_precedent_neg` -> de même pour négatif
+	- `operation` -> le code de l’opération, sur 4 bits
 
 
 
