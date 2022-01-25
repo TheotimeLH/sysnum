@@ -24,3 +24,9 @@ Vous pouvez executer `file.exe` avec différentes options :
 - `make microproc.exe` puis `./microproc.exe -s -roms rom_input.txt ../pomme/clock_quick.txt`
 
 (On peut rajouter le mot clé `time` devant l'instruction pour les comparer.)
+
+## Présision sur l'affichage 7 bâtons
+Si dans les outputs de la netlist se trouve une variable nommée "maj_ecran". Le compilateur rajoute des instructions pour ouvrir une fenêtre avec Graphics et des appels à une fonction d'affichage quand voulu.
+Cette fonction demande 7 arguments (secondes, minutes, heures, jours, mois et années x2) sous format 7 bâtons (cf. netlist_python/batonneur). Le programme mémorise les dernières valeurs données c'est-à-dire ce qui est affiché à l'écran. En comparant avec les nouvelles, on peut trouver l'argument qui a été modifié (toujours un unique) et mettre à jour uniquement les bâtons nécessaires.	Néanmoins, on donne à Graphics des coordonnées de pixels donc certaines machines ne peuvent pas afficher l'horloge en entier par manque de pixel.
+
+
