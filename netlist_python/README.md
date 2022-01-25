@@ -34,6 +34,8 @@ Nous allons détailler le rôle de chacun de ces composants.
 ### Corps du microprocesseur
 Le microprocesseur coordonne toutes les fonctions définies ensuites. Son fonctionnement est assez intuitif.
 
+Mentionnons tout de même que le microprocesseur possède deux roms (une rom pour le programme binaire, nommé `rom_prog`, et une rom d’entrée (pour donner des informations au programme :`rom_input`)) et deux rams : une ram de travail, et une ram d’affichage, qui s’appelle `ram_batons`.
+
 ### Lecteur de code
 
 - Entrées :
