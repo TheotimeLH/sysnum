@@ -12,6 +12,9 @@ clk_real: pomme
 clk_quick: pomme
 	./pomme clock_quick.pomme
 
+clk_ultra_quick: pomme
+	./pomme clock_ultra_fast_forward.pomme
+
 pomme:
 	dune build main.exe
 	cp _build/default/main.exe pomme
