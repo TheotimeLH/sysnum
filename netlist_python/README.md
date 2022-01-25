@@ -111,28 +111,9 @@ De plus, si l’adresse de lecture commence par 0 (registre non existant, ou reg
 	- `resultat_precedent_neg` -> de même pour négatif
 	- `operation` -> le code de l’opération, sur 4 bits
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### Batonneur
 
-Le batonneur reçoit un entier 16 bits, supposé entre 00 et 99, ainsi seuls les 8 bits de poids faibles sont pris en compte. Il retrouve le chiffre des dizaines avec des comparaisons (dichotomie) puis celui des unités par une soustraction. On doit mettre ces chiffres en format 7 batons, puis renvoyer 16 bits dont 7 de droite représentent la dizaine et les 7 suivants l'unité (deux derniers inutiles). L'ordre des bâtons est (de droite à gauche): bas droite, bas, bas gauche, milieu, haut gauche, haut, haut droite.
+Le batonneur reçoit un entier 16 bits, supposé entre 00 et 99, ainsi seuls les 8 bits de poids faibles sont pris en compte. Il retrouve le chiffre des dizaines avec des comparaisons (dichotomie) puis celui des unités par une soustraction. On doit mettre ces chiffres en format 7 batons, puis renvoyer 16 bits dont les 7 premiers (de droite) représentent la dizaine et les 7 suivants l'unité (deux derniers inutiles). L'ordre des bâtons est (de droite à gauche): bas droite, bas, bas gauche, milieu, haut gauche, haut, haut droite.
 
 ### Alu
 
@@ -146,5 +127,6 @@ L'alu est disponible en deux version: alu16 (sur 16 bits à partir d'opération 
 - `0110` et logique
 - `0111` ou logique
 - `1000` xor logique
-- `1001` incrément modulo (On incrémente le premier argument mais on renvoie 0si il est égal au deuxième)
-
+- `1001` incrément modulo
+(On incrémente le premier argument mais on renvoie 0si il est égal au deuxième)
+En plus, du résultat de l'opération on renvoie deux drapeaux, l'un indiquant si le résultat est nul et l'autre si il est  négatif.
