@@ -24,3 +24,4 @@ Notre assembleur, qui répond au doux prénom de « pomme » a été inventé pa
 Le code des horloges est écrit en `.pomme` dans le dossier `pomme`. En particulier, le code de `clock_real.pomme` y est généreusement commenté.
 
 # Auteurs : Samuel Coulomb, Théotime Le Hellard, Vincent Peth
+https://github.com/physikks/sysnum
