@@ -131,4 +131,4 @@ L'alu est disponible en deux version: alu16 (sur 16 bits à partir d'opération 
 - `1000` xor logique
 - `1001` incrément modulo (On incrémente le premier argument mais on renvoie 0si il est égal au deuxième. C'est donc incrément classique au delà de la base.)
 
-En plus, du résultat de l'opération on renvoie deux drapeaux, l'un indiquant si le résultat est nul et l'autre si il est  négatif. Par aillers, les mux minimisent le nombre de porte grâce à l'évalutation paresseuse.
+En plus, du résultat de l'opération on renvoie deux drapeaux, l'un indiquant si le résultat est nul et l'autre si il est  négatif. Par aillers, les mux minimisent le nombre de porte car grâce à l'évalutation paresseuse seul le coté utile sera calculé.
