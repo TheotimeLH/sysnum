@@ -73,6 +73,19 @@ Le lecteur de code réalise l’incrément de la ligne et gêre les sauts.
 
 ### Gestionnaire des registres
 
+- Entrées :
+	- `read_addr1` -> adresse de lecture pour le registre 1 sur 4 bits
+	- `read_addr2` -> adresse de lecture pour le registre 2
+	- `write_addr_reg` -> adresse d’écriture dans les registres : dans notre microprocesseur, cette adresse est la même que `read_addr2`, mais le gestionnaire de registres peut gêrer une adresse d’écriture différente des deux adresse de lecture.
+	- `write_enable_reg` -> bit d’indication d’autorisation d’écriture
+	- `write_data_reg` -> valeur 16 bits à enregistrer 
+
+- Sorties :
+	- `value_reg1` -> valeur du registre à l’adresse `read_addr1`
+	- `value_reg2` -> valeur du registre à l’adresse `read_addr2`
+
+De plus, si l’adresse de lecture commence par 0 (registre non existant, ou registre nul), le gestionnaire des registre renverra 0 (sur 16 bits) pour cette valeur
+
 
 
 
