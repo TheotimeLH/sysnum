@@ -2,10 +2,10 @@ open Netlist_ast
 
 (* ========== Paramètres ========== *)
 
-let print_only = ref false
 let number_steps = ref (-1)
 let print_sorties = ref true
 let dossier_rom = ref "rom_test"
+let roms_donnees = ref []
 
 (* ========== Fonctions auxiliaires ========== *)
 
@@ -101,7 +101,11 @@ let cree_rom t_roms (id,a_size,w_size) =
 		Hashtbl.add t_roms id rom in
 	
 	try
-		lit_rom (open_in (!dossier_rom ^ "/" ^ id ^ ".txt"))
+    if !roms_donnees <> [] then (
+       lit_rom (open_in (List.hd !roms_donnees)) ;
+       roms_donnees := List.tl !roms_donnees )
+     else
+		   lit_rom (open_in (!dossier_rom ^ "/" ^ id ^ ".txt"))
 	with
 		Sys_error _ -> 
 			Printf.printf "Quelle est la ROM pour %s ? (on demande un .txt) \n" id ; 
@@ -227,7 +231,8 @@ let main () =
   Arg.parse
     ["-n", Arg.Set_int number_steps, "Number of steps to simulate";
 		 "-s", Arg.Clear print_sorties, "Disable print outputs";
-		 "-rom", Arg.Set_string dossier_rom, "Roms' directory"]
+     "-romdir", Arg.Set_string dossier_rom, "Roms' directory";
+     "-roms", Arg.Rest (fun r -> roms_donnees := !roms_donnees @ [r]), "Giv    e Roms, and hope they will be called in the same order"]
     compile
     ""
 ;;

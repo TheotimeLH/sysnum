@@ -39,11 +39,11 @@ let compiler filename p =
 		!num	) p.p_vars in
 	let num id = Env.find id e_num in
 	let snum id = string_of_int (num id) in
+  let len id = t_len.(num id) in
+  let slen id = string_of_int (len id) in
 	let str_nb_vars = "let nb_vars = " ^ (string_of_int nb_vars) ^ "\n" in
 	let str_t_nom = "let t_nom = [|" ^ (String.concat ";" (Array.to_list t_nom)) ^ "|]\n" in
-	let str_t_len = "let t_len = [|" ^ (String.concat ";" 
-		(List.map string_of_int (Array.to_list t_len))) ^ "|]\n" in
-	output_string cfile (str_nb_vars ^ str_t_nom ^ str_t_len) ;	
+	output_string cfile (str_nb_vars ^ str_t_nom) ;	
   let doit_affiche_batons = ref false in
   let outputs' = List.filter 
     (fun id -> if id = "maj_ecran" then 
@@ -53,27 +53,36 @@ let compiler filename p =
 
 	(* === Structures 2 (ROM et RAM) === *)
 	let list_roms = ref [] in 
-	let info_rams = Array.make nb_vars (0,0) in
+	let as_rams = Array.make nb_vars 0 in
 	let l_regs = ref [] in
 	let l_rams = ref [] in
   let pour_init = function
     |(a,Ereg b) -> l_regs := (a,b) :: !l_regs
     |(x,Erom(a_size,w_size,_)) ->
+      let xlen = t_len.(num x) in
+      if xlen <> w_size then (
+        Printf.eprintf "Problème avec la porte ROM %s : \n\
+          %d bits attendus, mais ROM de w_size %d" x xlen w_size ;
+        exit 1 ) ;
       list_roms := (x,a_size,w_size) :: !list_roms
     |(x,Eram(a_size,w_size,_,we,wa,data)) ->
-			info_rams.(num x) <- (a_size,w_size) ;
+      let xlen = t_len.(num x) in
+      if xlen <> w_size then (
+        Printf.eprintf "Problème avec la porte RAM %s : \n\
+          %d bits attendus, mais ROM de w_size %d" x xlen w_size ;
+        exit 1 ) ;
+			as_rams.(num x) <- a_size ;
       l_rams := (x,we,wa,data) :: !l_rams
     |_ -> () in
   List.iter pour_init p.p_eqs ;
 	
-	let str_info_rams = "let info_rams = [|" ^ (String.concat ";"
-		(List.map (fun (a_s,w_s) -> string_of_int a_s ^ "," ^ string_of_int w_s)
-		(Array.to_list info_rams))) ^ "|]\n" in
+	let str_as_rams = "let as_rams = [|" ^ (String.concat ";"
+		(List.map string_of_int	(Array.to_list as_rams))) ^ "|]\n" in
 	let str_l_roms = "let l_roms = [" ^ (String.concat ";"
 		(List.map (fun (x,a_s,w_s) -> string_of_int (num x) ^ "," ^
 			string_of_int a_s ^ "," ^ string_of_int w_s) !list_roms)) ^ "]\n" in
 
-	output_string cfile (str_info_rams ^ str_l_roms) ;
+	output_string cfile (str_as_rams ^ str_l_roms) ;
 	recopie skel cfile ;
  
 	(* === Les fonctions-variables === *)
@@ -86,96 +95,118 @@ let compiler filename p =
 		 \t\tt_fait.(" ^ (snum id) ^ ") <- !step ;\n\
 		 \t\tvaleur\n\tend\n\n" in
 	let sarg = function
-		|	Avar id -> "var_" ^ id ^ " () "
+		|	Avar id -> (len id , "(var_" ^ id ^ " () )")
 		|	Aconst v -> begin match v with 
-				|VBit b -> if b then "(1,1) " else "(1,0) "
-				|VBitArray t -> 
-					let n = Array.length t in
-					let k = ref 0 in
-					for i = 0 to n-1 do
-						k := (!k lsl 1) + (if t.(i) then 1 else 0)
-						done ;
-					"(" ^ (string_of_int n) ^ "," ^ (string_of_int !k) ^ ") "
-				end
+      |VBit b -> 1 , if b then "1" else "0"
+      |VBitArray t -> 
+        let n = Array.length t in
+        let k = ref 0 in
+        for i = 0 to n-1 do
+          k := (!k lsl 1) + (if t.(i) then 1 else 0)
+          done ;
+        (n , string_of_int !k)
+      end
 		in 
-	let pb_binop id = 
-     "(Printf.eprintf \"Problème avec la porte d'opération n bits " ^ id ^ 
-     ", %d != %d\ \" len1 len2 ; exit 1)" in
+
+  let pb_len id len len' =
+    Printf.eprintf "Problème avec la porte %s, %d bits attendus, %d donnés" id len len' ;
+    exit 1 in
+  let pb_binop id len l1 l2 =
+    Printf.eprintf "Problème avec la porte %s, %d bits demandés, %d et %d donnés" id len l1 l2 ;
+    exit 1 in
+
+  let uns len = string_of_int (1 lsl len - 1) in
 
 	let mk_fct_var_input id = 
     (debut id) ^
     begin match id with
-    | "real_clock" -> "\t\tlet valeur = (1,(int_of_float (Sys.time ())) mod 2) in \n"
-    | _ -> "\t\tlet valeur = ask_input " ^ (snum id) ^ " in\n" 
+    | "real_clock" -> "\t\tlet valeur = int_of_float (Sys.time ()) mod 2 in \n"
+    | _ -> "\t\tlet valeur = ask_input " ^ (snum id) ^ " " ^ (slen id)^ " in\n" 
     end
     ^ (fin id) in
-
 
 	let mk_fct_var_porte (id,exp) = match exp with
 		|	Ereg r -> "let var_" ^ id ^ " () = t_val.(" ^ (snum id) ^ ")\n\n"
 		|	_ -> (* on traite juste les REG à part *) 
 		(debut id) ^
 		begin match exp with
-			|	Earg a -> "\t\tlet valeur = " ^ (sarg a) ^ " in\n"
-			|	Enot a -> 
-					"\t\tlet (len,n) = " ^ (sarg a) ^ " in\n\
-          \t\tlet valeur = (len,(lnot n) land ((1 lsl len) -1)) in \n"
-          (* Version à la main :
-					\t\tlet n = ref n and k = ref 0 in\n\
-					\t\tfor i = 0 to len -1 do\n\
-					\t\t\tk := !k + ((1-(!n mod 2)) lsl i) ; n := !n lsr 1 done ;\n\
-					\t\tlet valeur = (len,!k) in \n *)
+			|	Earg a -> 
+          let la,sa = sarg a in
+          let len = len id in
+          if la <> len then pb_len id len la ;
+          "\t\tlet valeur = " ^sa^ " in\n"
+      |	Enot a -> 
+          let la,sa = sarg a in
+          let len = len id in
+          if la <> len then pb_len id len la ;
+          "\t\tlet valeur = (lnot "^sa^") land "^(uns la)^" in \n"
 
 			|	Ebinop (Xor,a1,a2) ->
-					"\t\tlet (len1,n1) = " ^ (sarg a1) ^ " and (len2,n2) = " ^ (sarg a2) ^ " in\n\
-					\t\tlet valeur = if len1 = len2 then (len1, n1 lxor n2)\n\
-					\t\telse "^ (pb_binop id) ^" in\n\n"
+          let l1,sa1 = sarg a1 in
+          let l2,sa2 = sarg a2 in
+          let len = len id in
+          if len <> l1 || len <> l2 then pb_binop id len l1 l2 ;
+					"\t\tlet valeur = "^sa1^" lxor "^sa2^" in\n"
 
 			|	Ebinop (op,a1,a2) ->
-          (* Je veux des opérations paresseuses, si a1 vaut 1 alors a1 & _ = 1
-             ainsi on peut parfois se passer de calculer a2. Mais du coup on 
-             peut laisser passer des opérations avec len1 != len2.
-             Je me demande si c'était une bonne idée de stocker la len des buss
-             dans le prgm compilé. J'aurai pu la garder en donné dans le skeleton
-             et le compiler. Tant pis.    *)
-					"\t\tlet (len1,n1) = " ^ (sarg a1) ^ " in\n\
+          (* Je veux des opérations paresseuses y compris sur les opérations n bits,
+             si a1 vaut 1111 alors a1 | _ = 1111. Ainsi on peut parfois se passer de calculer a2. *)
+          let l1,sa1 = sarg a1 in
+          let l2,sa2 = sarg a2 in
+          let len = len id in
+          if len <> l1 || len <> l2 then pb_binop id len l1 l2 ;
+          
+					"\t\tlet n1 = " ^sa1^ " in\n\
 					\t\tlet valeur = " ^
 					begin match op with
-						|	Or -> " if n1 = (1 lsl len1 - 1) then (len1,n1) \n"
-						|	And -> " if n1 = 0 then (len1,0) \n"
-						|	_ (*Nand*) -> " if n1 = 0 then (len1,1 lsl len1 - 1) \n" end ^
-					"\t\t\telse ( let (len2,n2) = " ^ (sarg a2) ^ " in \n\
-					\t\t\t\tif len1 <> len2 then \n\t\t\t\t"^ (pb_binop id) ^ "\n\
-					\t\t\t\telse " ^
+						|	Or -> "if n1 = "^(uns l1)^" then n1"
+						|	And -> "if n1 = 0 then 0"
+						|	_ (*Nand*) -> "if n1 = 0 then "^(uns l1) end ^
+					" else " ^
           begin match op with
-            | Or -> "(len1,n1 lor n2) ) in \n"
-            | And -> "(len1,n1 land n2) ) in \n"
-            | _ (*Nand*) -> " (len1, (lnot (n1 land n2)) land (1 lsl len1 -1)) ) in \n" end
+            | Or -> "n1 lor "^sa2
+            | And -> "n1 land "^sa2
+            | _ (*Nand*) -> " (lnot (n1 land "^sa2^")) land "^(uns l1) end ^" in \n"
 
 			|	Emux (choice,a1,a2) ->
-					"\t\tlet valeur = if snd ("^ (sarg choice) ^ ") > 0 then "^ (sarg a2) ^
-					"else " ^ (sarg a1) ^ " in\n"
+          let l1,sa1 = sarg a1 in
+          let l2,sa2 = sarg a2 in
+          let len = len id in
+          if len <> l1 || len <> l2 then pb_binop id len l1 l2 ;
+          let sc = snd (sarg choice) in
+					"\t\tlet valeur = if "^sc^" > 0 then "^sa2^" else "^sa1^" in\n"
 
 			|	Erom (_,_,a) -> 
-					"\t\tlet valeur = t_roms.("^ (snum id) ^").(snd ("^ (sarg a) ^")) in\n"
+					"\t\tlet valeur = t_roms.("^(snum id)^").("^(snd (sarg a))^") in\n"
 
 			|	Eram (_,_,a,_,_,_) ->
-					"\t\tlet valeur = t_rams.("^ (snum id) ^").(snd ("^ (sarg a) ^")) in\n"
+					"\t\tlet valeur = t_rams.("^(snum id)^").("^(snd (sarg a))^") in\n"
 
 			| Econcat (a1,a2) ->
-					"\t\tlet (len1,n1) = " ^ (sarg a1) ^ " and (len2,n2) = " ^ (sarg a2) ^ " in\n\
-					\t\tlet valeur = (len1+len2,(n1 lsl len2) + n2) in\n"
+          let l1,sa1 = sarg a1 in
+          let l2,sa2 = sarg a2 in let sl2 = string_of_int l2 in
+          let len = len id in
+          if len <> l1 + l2 then pb_len id len (l1+l2) ;
+					"\t\tlet valeur = ("^sa1^" lsl "^sl2^") + "^sa2^" in\n"
 
 			|	Eselect (i,a) -> 
-					"\t\tlet (len,n) = "^ (sarg a) ^" and i = "^ (string_of_int i) ^" in \n\
-					\t\tlet valeur = if i+1>len then failwith \" i-eme bit avec i>len\" \n\
-					\t\telse (1,(n lsr (len-i-1)) mod 2) in\n"
+          let la,sa = sarg a in
+          let len = len id in
+          if len <>1 then pb_len id len 1 ;
+          if i+1>la then (
+            Printf.eprintf "Problème avec le Select %s, %d +1> %d" id i la ;
+            exit 1) ;
+					"\t\tlet valeur = ("^sa^" lsr "^(string_of_int (la-i-1))^") mod 2 in\n"
 
 			|	Eslice (i1,i2,a) -> 
-					"\t\tlet (len,n) = "^ (sarg a) ^" in \n\
-					\t\tlet i1 = "^ (string_of_int i1) ^" and i2 = "^ (string_of_int i2) ^" in\n\
-					\t\tlet valeur = if i2+1>len || i2 < i1 then failwith \"pb slice\"\n\
-					\t\telse (i2-i1+1,( (n lsr (len-i2-1)) mod (1 lsl (i2-i1+1)))) in\n"
+          let la,sa = sarg a in
+          let len = len id in
+          if len <> i2-i1+1 then pb_len id len (i2-i1+1) ;
+          if i2+1>la || i2<i1 then (
+            Printf.eprintf "Problème avec le Slice %s où i1=%d et i2=%d, sur %d" id i1 i2 la;
+            exit 1) ;
+          let _uns = string_of_int (1 lsl (i2-i1+1)) in
+					"\t\tlet valeur = ("^sa^" lsr "^(string_of_int (la-i2-1))^") mod "^_uns^" in\n"
 			|	Ereg _ -> failwith "deja fait"
 		end
 		^ (fin id) in
@@ -193,21 +224,36 @@ let compiler filename p =
      \t\tGraphics.set_line_width 10 ; \n" ;
   recopie skel cfile ;
 	let mk_sortie id =
-		  "\t\tlet sortie = (intv_to_strb (var_"^ id ^" ())) in\n\
+		  "\t\tlet sortie = intv_to_strb (var_"^ id ^" ()) "^(slen id)^" in\n\
 		  \t\tif !print_sorties then Printf.printf \"=> "^ id ^" = %s \\n\" sortie ;" in
 	output_string cfile (String.concat "\n" (List.map mk_sortie outputs')) ;
 	recopie skel cfile ;
 
 	(* === Les REG / RAM === *)
 	let mk_reg (a,b) =
+    let la = t_len.(num a) in 
+    let lb = t_len.(num b) in 
+    if la <> lb then pb_len a la lb ; 
 		"\t\tt_reg.("^ (snum a) ^") <- var_"^ b ^" () ;\n" in
 	output_string cfile (String.concat "" (List.map mk_reg !l_regs)) ;
 
   let num_ram_ecran = ref 0 in
 	let mk_ram (id,w_e,w_a,w_d) =
+    let lwa,swa = sarg w_a in
+    let lwd,swd = sarg w_d in
+    let len = len id in
+    if len <> lwd then (
+      Printf.eprintf "Problème avec la RAM associée à %s, \n\
+        la taille de la w_data %d ne convient pas (%d attendu)" id lwd len ;
+      exit 1) ;
+    let asize = as_rams.(num id) in
+    if lwa <> asize then (
+      Printf.eprintf "Problème avec la RAM associée à %s, \n\
+        adresse demandée sur %d bits, mais RAM avec adresses %d bits" id lwa asize ;
+      exit 1) ;
     if w_e = Avar "maj_ecran" then num_ram_ecran := num id ;
-		"\t\tif snd ("^ (sarg w_e) ^") > 0 then t_rams.("^ (snum id) ^").(snd("
-		^ (sarg w_a) ^")) <- "^ (sarg w_d) ^ " ;\n" in
+		"\t\tif "^(snd (sarg w_e))^" > 0 then t_rams.("^ (snum id) ^").("
+		^swa^") <- "^swd^ " ;\n" in
 	output_string cfile (String.concat "" (List.map mk_ram !l_rams)) ;
 
 	let mk_reg2 (a,_) =
@@ -217,10 +263,10 @@ let compiler filename p =
   (* === La sortie spéciale Sept_batons === *)
   if !doit_affiche_batons then output_string cfile
     ("\n\t\t (* Cas spécial, où on a demandé à utiliser des sept_batons : *) \n\
-    \t\tif snd (var_maj_ecran ()) = 1 then (\n\
-    \t\tlet ram = t_rams.(" ^ (string_of_int !num_ram_ecran) ^ ") in \n\
-    \t\t\tAffiche.affiche_batons (snd ram.(0)) (snd ram.(1)) (snd ram.(2)) \n\
-    \t\t\t\t(snd ram.(3)) (snd ram.(4)) (snd ram.(5)) (snd ram.(6)) )  ;\n") ;
+    \t\tif var_maj_ecran () = 1 then (\n\
+    \t\t\tlet ram = t_rams.(" ^ (string_of_int !num_ram_ecran) ^ ") in \n\
+    \t\t\tAffiche.affiche_batons ram.(0) ram.(1) ram.(2) \
+      ram.(3) ram.(4) ram.(5) ram.(6) )  ;\n") ;
 
   output_string cfile 
     (if !doit_affiche_batons then 
