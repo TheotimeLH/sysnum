@@ -30,6 +30,10 @@ Le microprocesseur est constitué des éléments suivants :
 
 Nous allons détailler le rôle de chacun de ces composants.
 
+
+### Corps du microprocesseur
+Le microprocesseur coordonne toutes les fonctions définies ensuites. Son fonctionnement est assez intuitif.
+
 ### Lecteur de code
 
 - Entrées :
@@ -73,10 +77,39 @@ Le lecteur de code réalise l’incrément de la ligne et gêre les sauts.
 
 ### Gestionnaire des registres
 
+- Entrées :
+	- `read_addr1` -> adresse de lecture pour le registre 1 sur 4 bits
+	- `read_addr2` -> adresse de lecture pour le registre 2
+	- `write_addr_reg` -> adresse d’écriture dans les registres : dans notre microprocesseur, cette adresse est la même que `read_addr2`, mais le gestionnaire de registres peut gêrer une adresse d’écriture différente des deux adresse de lecture.
+	- `write_enable_reg` -> bit d’indication d’autorisation d’écriture
+	- `write_data_reg` -> valeur 16 bits à enregistrer 
+
+- Sorties :
+	- `value_reg1` -> valeur du registre à l’adresse `read_addr1`
+	- `value_reg2` -> valeur du registre à l’adresse `read_addr2`
+
+De plus, si l’adresse de lecture commence par 0 (registre non existant, ou registre nul), le gestionnaire des registre renverra 0 (sur 16 bits) pour cette valeur
 
 
 
+### Interface de l’alu
 
+- Entrées :
+	- `value_reg1`
+	- `value_reg2`
+	- `entier`
+	- `resultat_nul` -> indicateur que le résultat de l’alu est nul
+	- `resultat_neg` -> indicateur que le résultat de l’alu est négatif
+	- `operation_brute` -> le code de l’opération, sur 5 bits
+	- `operande_droit`
+	- `operande_gauche` 
+
+- Sorties :
+	- `value_1` -> la valeur de l’opérande de gauche
+	- `value_2` -> la valeur de l’opérande de droite
+	- `resultat_precedent_nul` -> indicateur que le résultat du calcul au tour précédent était nul
+	- `resultat_precedent_neg` -> de même pour négatif
+	- `operation` -> le code de l’opération, sur 4 bits
 
 
 
