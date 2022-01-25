@@ -1,11 +1,26 @@
 # Projet de Système numérique
 
-Simulateur de netlist, microprocesseur et langage assembleur sur ce microprocesseur
+Simulateur de netlist, microprocesseur et langage assembleur sur ce microprocesseur (avec son compilateur) avec exécution d’horloges en guise d’exemples.
 
-## Utilisation du compilateur : 
-En théorie, se placer dans le fichier et utiliser `make fichier.byte` si on dispose de `fichier.net` suffit à compiler.
+## Faire fonctionner le microprocesseur sur les horloges de démonstration
 
-Si ça ne marche pas, il faut à la main compiler le compilateur, puis lancer `.\compilateur_netlist.byte fichier` pour compiler le fichier `fichier.net` (pas besoin de recopier le .net, cela provoquerait une erreur)
+Se rendre dans le dossier `main` et suivre les instructions du README s’y trouvant.
 
-Ensuite, `fichier.byte` exécute la netliste, et prend comme option `-muet` pour ne rien afficher et `-n 10` pour ne réaliser que les 10 premières itérations (on peut évidemment changer le nombre en argument).
 
+### Simulateur de netlist
+
+Le simulateur utilisé est fondé sur celui de Théotime, qui compile les netlists aux formats `.ml`. Vous le trouverez, ainsi que son README, dans le dossier `netlist_compiler`.
+
+### Microprocesseur
+
+Le microprocesseur a été créé avec l’outil `Carotte.py`, vous le trouverez, ainsi que son README, dans le dossier `netlist_python`.
+
+### Langage assembleur
+
+Notre assembleur, qui répond au doux prénom de « pomme » a été inventé par nous-mêmes. Tous les détails le concernant (parser, lexer, et transcription en binaire) sont disponibles dans le README du dossier `pomme`.
+
+### Horloges
+
+Le code des horloges est écrit en `.pomme` dans le dossier `pomme`. En particulier, le code de `clock_real.pomme` y est généreusement commenté.
+
+# Auteurs : Samuel Coulomb, Théotime Le Hellard, Vincent Peth

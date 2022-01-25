@@ -1,0 +1,143 @@
+// DISCLAIMER : Les méthodes utilisées pour rendre l’horloge plus rapide peuvent ne pas être considérée comme justes. Ce code ne constitue pas notre participation à l’horloge rapide telle qu’elle est demandée par la fiche de projet
+
+load_rom (0) r1 // Les secondes
+sept_batons r1 (0)
+load_rom (1) r2 // Les minutes
+sept_batons r2 (1)
+load_rom (2) r3 // Les heures
+sept_batons r3 (2)
+
+// Le jour actuel, entre 0 et 30.
+load_rom (3) r4
+save r4 (0) 
+add 1 r4
+sept_batons r4 (3) // Jour + 1 pour aller de 1 à 31
+
+// Le mois entre 0 et 11
+load_rom (4) r4
+save r4 (1) 
+add 1 r4
+sept_batons r4 (4)
+
+// L'année :
+load_rom (5) r4 // Les deux premiers chiffres, de poids forts
+save r4 (2)
+sept_batons r4 (5)
+load_rom (6) r4 // Les deux derniers, de poids faibles
+save r4 (3)
+sept_batons r4 (6)
+
+// Je calcule à la main année mod 4 une fois pour l'initialisation.
+Moins4:
+	sub 4 r4
+	jump_non_neg Moins4
+	add 4 r4
+	save r4 (4)
+
+// Le nombre de jours de chaque mois.
+set 31 r4
+save r4 (5)
+set 28 r4
+save r4 (6)
+set 31 r4
+save r4 (7)
+set 30 r4
+save r4 (8)
+set 31 r4
+save r4 (9)
+set 30 r4
+save r4 (10)
+set 31 r4
+save r4 (11)
+set 31 r4
+save r4 (12)
+set 30 r4
+save r4 (13)
+set 31 r4
+save r4 (14)
+set 30 r4
+save r4 (15)
+set 31 r4
+save r4 (16)
+
+
+set 0 r4
+set 0 rbx
+Initialisation_sauts :
+set 0 rax
+Foriinrange7 :
+incrz 60 rbx
+incrz 7 rax
+jump_non_nul Foriinrange7
+save rbx ($r4 + 17)
+incrz 60 r4
+jump_non_nul Initialisation_sauts
+
+
+
+Corps:
+	// Les secondes :
+	incrz 60 r1 // Incrémente et si = 60 alors 0.
+	load ($r1+17) r4
+	sept_batons r4 (0)
+
+	// Les minutes :
+	incrz 60 r2
+	sept_batons r2 (1)
+	and $r2 r2
+	jump_non_nul Corps
+
+	// Les heures :
+	incrz 24 r3
+	sept_batons r3 (2)
+	and $r3 r3
+	jump_non_nul Corps
+
+	// Le jour :
+	load (0) rax // jour actuel
+	load (1) rbx // mois actuel
+	// Gestion de l'année bissextile :
+	load (4) r4 // année mod 4
+	and $r4 r4 // Pour le flag
+	jump_non_nul Pas_fevrier_biss
+	move rbx r4
+	xor 1 r4 // 1 <=> février
+	jump_non_nul Pas_fevrier_biss
+	set 29 rcx
+	jump Fin_fevrier_biss
+	Pas_fevrier_biss:
+	load ($rbx + 5) rcx
+	Fin_fevrier_biss:
+	// Fin de gestion de l'année bissextile
+	incrz $rcx rax
+	save rax (0)
+	move rax r4
+	add 1 r4
+	sept_batons r4 (3) // Jour + 1 pour aller de 1 à 31
+	and $rax rax
+	jump_non_nul Corps
+
+	// Le mois
+	incrz 12 rbx
+	save rbx (1)
+	move rbx r4
+	add 1 r4
+	sept_batons r4 (4)
+	and $rbx rbx
+	jump_non_nul Corps
+
+	// L'année
+	load (4) rcx // année mod 4
+	incrz 4 rcx
+	save rcx (4) 
+	load (3) rbx // les deux chiffres de poids faibles
+	incrz 100 rbx
+	save rbx (3)
+	sept_batons rbx (6)
+	and $rbx rbx
+	jump_non_nul Corps
+	load (2) rax // les deux chiffres de poids forts
+	add 1 rax
+	sept_batons rax (5)
+	save rax (2)
+	jump Corps
