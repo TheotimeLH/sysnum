@@ -99,24 +99,19 @@ Le lecteur de code réalise l’incrément de la ligne et gêre les sauts.
 
 ### Batonneur
 
-Le batonneur reçoit un entier 16 bits, supposé entre 00 et 99, ainsi seuls les 8 bits de poids faibles sont pris en compte. Il retrouve le chiffre des dizaines avec des comparaisons (dichotomies) puis celui des unités par une soustraction. On doit mettre ces chiffres en format 7 batons, puis renvoyer 16 bits dont 7 de gauche représentent la dizaine et les 7 suivants l'unité (de dernier inutiles). L'ordre des bâtons est le suivant:
+Le batonneur reçoit un entier 16 bits, supposé entre 00 et 99, ainsi seuls les 8 bits de poids faibles sont pris en compte. Il retrouve le chiffre des dizaines avec des comparaisons (dichotomie) puis celui des unités par une soustraction. On doit mettre ces chiffres en format 7 batons, puis renvoyer 16 bits dont 7 de droite représentent la dizaine et les 7 suivants l'unité (deux derniers inutiles). L'ordre des bâtons est (de droite à gauche): bas droite, bas, bas gauche, milieu, haut gauche, haut, haut droite.
 
-.-6-.
+### Alu
 
-|...|
-
-5...7
-
-|...|
-
-.-4-.
-
-|...|
-
-1...3
-
-|...|
-
-.-2-.
-
+L'alu est disponible en deux version: alu16 (sur 16 bits à partir d'opération bit à bit) et alu (sur n bits avec les opérateurs n bits de carotte). L'alu attend trois entrées: deux entiers compatbiles (de même taille) et un code d'opérateur sur 4 bits. Le code correspond à l'opération à effectuer parmis les suivantes:
+- `0000` renvoie le premier argument
+- `0001` additionneur
+- `0010` multiplieur
+- `0011` soustraction (entiers signés)
+- `0100` opposé (entiers signés)
+- `0101` not logique 
+- `0110` et logique
+- `0111` ou logique
+- `1000` xor logique
+- `1001` incrément modulo (On incrémente le premier argument mais on renvoie 0si il est égal au deuxième)
 
