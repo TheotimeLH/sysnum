@@ -9,3 +9,4 @@
 - `make` fait les deux précédentes.
 - `make clock_real` et `make clock_quick` lancent le microprocesseur (en le créant si besoin) sur les horloges exemples. Si vous voulez activer l'affichage des étapes dans le terminal, précisez SILENCE=1, par exemple `make clock_real SILENCE=1`.
 - Tout ce qui précède va marcher à condition que Graphics soit installé d'office. Sinon, vous devez précisez SIMPLE=1, par exemple `make SIMPLE=1` ou `make clock_quick SILENCE=1 SIMPLE=1`.
+- Nous avons un troisième exemple, qui peut être appelé avec `make clock_ultra_quick`. Mais attention, ce n'est qu'un amusement et non une véritable horloge, puisqu'elle saute des secondes.

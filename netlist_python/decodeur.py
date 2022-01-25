@@ -84,6 +84,8 @@ def decodeur(code) :
 # sauver_resultat_alu           indicateur sur 1 bit
 # batonnage                     indicateur sur 1 bit
 # lire_la_rom                   indicateur sur 1 bit
+# operande_gauche               vaut 1 si c’est r2, 0 si c’est r1
+# operande_droit                vaut 1 si c’est l’entier, et 0 si c’est r1
 
 #debug :
 def main():

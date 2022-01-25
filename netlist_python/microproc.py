@@ -12,9 +12,8 @@ DEBOGUE_MODE = False
 
 def main():
     #initialisation
-    prog_rom_addr_size = 10
+    prog_rom_addr_size = 10 
     prog_rom_word_size = 32
-    line_incr = Constant("1")
     reg_size = 16
     ram_addr_size = 10
     ram_word_size = 16
@@ -22,11 +21,12 @@ def main():
     word_size_batons = 16
     rom2_word_size = 16
     rom2_addr_size = 8
+    #Ne pas changer ces variables, sans quoi le microprocesseur ne marchera plus
 
     #line_init = Constant("0000000000")    
 
 
-    def liseur_code(jump_line, jump_flag, line_incr) :
+    def liseur_code(jump_line, jump_flag, curr_line) :
         def incr_line(a):
             b = Constant("1")
             for i in range(prog_rom_addr_size - 1):
