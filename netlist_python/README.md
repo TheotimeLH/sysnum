@@ -101,22 +101,22 @@ Le lecteur de code réalise l’incrément de la ligne et gêre les sauts.
 
 Le batonneur reçoit un entier 16 bits, supposé entre 00 et 99, ainsi seuls les 8 bits de poids faibles sont pris en compte. Il retrouve le chiffre des dizaines avec des comparaisons (dichotomies) puis celui des unités par une soustraction. On doit mettre ces chiffres en format 7 batons, puis renvoyer 16 bits dont 7 de gauche représentent la dizaine et les 7 suivants l'unité (de dernier inutiles). L'ordre des bâtons est le suivant:
 
- -6- 
+.-6-.
 
-|   |
+|...|
 
-5   7
+5...7
 
-|   |
+|...|
 
- -4-
+.-4-.
 
-|   |
+|...|
 
-1   3
+1...3
 
-|   |
+|...|
 
- -2-
+.-2-.
 
 
