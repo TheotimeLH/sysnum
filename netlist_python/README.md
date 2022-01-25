@@ -5,7 +5,7 @@
 
 En plus de ce README, ce dossier contient le code carotte-compatible de notre microprocesseur.
 
-Le microprocesseur est constitué des fichiers `microproc.py` (qui est le fihier principal), `batonneur.py`, `decodeur.py`, `registres.py`, et `alu.py`. Les trois derniers fichiers sont compilables par carotte sans fichier supplémentaires (dans l’optique de permettre de déboguer chaque composant à la main).
+Le microprocesseur est constitué des fichiers `microproc.py` (qui est le fichier principal), `batonneur.py`, `decodeur.py`, `registres.py`, et `alu.py`. Les trois derniers fichiers sont compilables par carotte sans fichier supplémentaires (dans l’optique de permettre de déboguer chaque composant à la main).
 
 ## Particularité du microprocesseur :
 
@@ -97,6 +97,18 @@ Le lecteur de code réalise l’incrément de la ligne et gêre les sauts.
 
 
 
+### Batonneur
 
+Le batonneur reçoit un entier 16 bits, supposé entre 00 et 99, ainsi seuls les 8 bits de poids faibles sont pris en compte. Il retrouve le chiffre des dizaines avec des comparaisons (dichotomies) puis celui des unités par une soustraction. On doit mettre ces chiffres en format 7 batons, puis renvoyer 16 bits dont 7 de gauche représentent la dizaine et les 7 suivants l'unité (de dernier inutiles). L'ordre des bâtons est le suivant:
+
+ -6- 
+|   |
+5   7
+|   |
+ -4-
+|   |
+1   3
+|   |
+ -2-
 
 
