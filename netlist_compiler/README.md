@@ -13,12 +13,14 @@ En une seule commande : `make file.exe` crée le compilateur si besoin, puis le 
 Vous pouvez executer `file.exe` avec différentes options :
 - `-n number_steps` nombres d'étapes (infini par défaut)
 - `-s` pour désactiver l'affichage des sorties
-- `-rom dossier` Pour donner le dossier où chercher les ROM par défaut. Pour un identifiant `id` nécessitant une ROM, on commence par chercher par défaut si `dossier/id.txt` existe, si non on demande à l'utilisateur explicitement quel fichier prendre. Le dossier par défaut est `rom_test`.
+- `-romdir dossier` Pour donner le dossier où chercher les ROM par défaut. Pour un identifiant `id` nécessitant une ROM, on commence par chercher par défaut si `dossier/id.txt` existe, si non on demande à l'utilisateur explicitement quel fichier prendre. Le dossier par défaut est `rom_test`.
+- `-roms ...` Tous les mots suivants feront office de roms par défaut, dans l'ordre dans lequel elles seront demandées (il est préférable de ne l'utiliser que lorsqu'on est sûr de cet ordre).
 
 ## Pour utiliser le simulateur :
 `make netlist_simulator` crée le simulateur de netlist, qui peut directement être executé, avec les mêmes options que précedemment, en lui précisant la netlist en plus. 
 ## Exemples :
 - `make test/clock_rom.exe` puis `test/clock_rom.exe -n 1000000 -s`
 - `make netlist_simulator` puis `./netlist_simulator -n 1000000 -s -rom rom_test2 test/clock_rom.net`
+- `make microproc.exe` puis `./microproc.exe -s -roms rom_input.txt ../pomme/clock_quick.txt`
 
 (On peut rajouter le mot clé `time` devant l'instruction pour les comparer.)

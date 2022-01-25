@@ -28,9 +28,9 @@ let strb_to_intv s k = (* k : le nb de bits voulus *)
 	else begin let n = ref 0 in
 		for i = 0 to k-1 do
 			n := (!n lsl 1) + (if int_of_char s.[i] > 48 then 1 else 0) done ;
-		(k,!n) end
+		!n end
 
-let intv_to_strb (len,n) =
+let intv_to_strb n len =
 	let s = ref "" and k = ref n in
 	for _ = 1 to len do
 		s := string_of_int (!k mod 2) ^ !s ;
@@ -41,21 +41,18 @@ let intv_to_strb (len,n) =
 
 let step = ref 0 
 $
-let t_val = Array.init nb_vars (fun i -> (t_len.(i),0))
+let t_val = Array.make nb_vars 0
 let t_fait = Array.make nb_vars 0 
-let t_reg = Array.init nb_vars (fun i -> (t_len.(i),0))
+let t_reg = Array.make nb_vars 0
 $
 let t_roms = Array.make nb_vars [||]
-let t_rams = Array.init nb_vars 
-	(fun i -> let a_s,w_s = info_rams.(i) in
-	Array.make (1 lsl a_s) (w_s,0))
+let t_rams = Array.map (fun a_s -> Array.make (1 lsl a_s) 0) as_rams
 
 # (*
 	Chaque variable est désormais identifié par un num
 	t_nom : Array num -> le nom de sa variable
-	t_len : Array num -> son nombre de bits, sa len
 	
-	t_val : Array num -> intv : (len * int), les len bits de poids faible de int 
+	t_val : Array num -> intv : int, les len bits de poids faible de int 
 	t_fait : Array num -> la dernière step où t_val.(num) fut calculée
 		Attention : les portes REG conservent les anciennes valeurs d'autres
 		variables. Leur comportement est singulier, on calcul toujours leurs
@@ -69,17 +66,17 @@ let t_rams = Array.init nb_vars
 
 (* ==== Entrées : input / ROM  ==== *)
 
-let rec ask_input num = 
+let rec ask_input num len = 
 	Printf.printf "%s = " t_nom.(num) ;
-	try (strb_to_intv (read_line ()) t_len.(num))
+	try (strb_to_intv (read_line ()) len)
 	with Wrong_length -> 
-		Printf.printf "ERREUR : on demande %d bits \n" t_len.(num) ;
-		ask_input num 
+		Printf.printf "ERREUR : on demande %d bits \n" len;
+		ask_input num len
 
 let recup_rom (num,a_size,w_size) = 
 	let m = 1 lsl a_size in
 	let lit_rom file = 
-		let rom = Array.make m (w_size,0) in
+		let rom = Array.make m 0 in
 		let k = ref 0 in
 		let end_of_file = ref false in
     while !k < m && not !end_of_file do
@@ -109,27 +106,27 @@ let recup_rom (num,a_size,w_size) =
   with
     Sys_error _ -> begin
       Printf.printf "Quelle est la ROM pour %s ? (on demande un .txt) \n\ 
-				NB: Avec l'argument -rom vous pouvez indiquer un dossier \
+				NB: Avec l'argument -romdir vous pouvez indiquer un dossier \
 				où chercher par défaut, actuellement %s) \n" t_nom.(num) !dossier_rom ;
       try lit_rom (open_in (read_line ()))
       with
         Sys_error _ ->
           print_endline "Fichier non trouvé, ROM initialisée avec des 0" ;
-          t_roms.(num) <- Array.make m (w_size,0)
+          t_roms.(num) <- Array.make m 0
 			end
 
 
 (* ======== Les fonctions-variables ======== *)
 
 $
-# (* Du style :
+# (* De la forme :
 let var_<nom> () =
 	if t_fait.(<num>) = !step then t_val.(<num>)
 	else begin
-		val = <la porte>
-		t_val.(<num>) <- val ;
+		let valeur = <la porte> in
+		t_val.(<num>) <- valeur ;
 		t_fait.(<num>) <- !step ;
-		val
+		valeur
 	end
 
 Attention, pour les portes : a = REG b 
