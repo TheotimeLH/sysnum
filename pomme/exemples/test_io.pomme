@@ -1,0 +1,8 @@
+set 4 r1
+mult 5 r1
+input r2
+mult $r2 r1
+output r1
+add 5 r2
+sub 7 r2
+mult $r2 r1

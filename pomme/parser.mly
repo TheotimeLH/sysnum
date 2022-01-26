@@ -9,7 +9,7 @@
 %token <string> LABEL
 %token <string> REG
 %token <int> CONST
-%token MOVE SET MULT ADD SUB NEG NOT AND OR XOR
+%token MOVE SET INPUT OUTPUT MULT ADD SUB NEG NOT AND OR XOR
 %token INCRZ LOAD SAVE LOAD_ROM JUMP JUMP_NUL JUMP_NON_NUL
 %token JUMP_NEG JUMP_NON_NEG MOVE_REAL_CLOCK SEPT_BATONS
 %token COLON
@@ -35,10 +35,14 @@ ligne:
     { {loc = ($startpos,$endpos) ; desc = Move (reg1,reg2) } } 
   | SET ; int1 = gr_int ; reg2 = REG
     { {loc = ($startpos,$endpos) ; desc = Set (int1,reg2) } }
-  | MULT ; int1 = gr_int ; reg2 = REG
-    { {loc = ($startpos,$endpos) ; desc = Mult (int1,reg2) } }
+  | INPUT ; reg1 = REG
+    { {loc = ($startpos,$endpos) ; desc = Input reg1 } } 
+  | OUTPUT ; reg1 = REG
+    { {loc = ($startpos,$endpos) ; desc = Output reg1 } } 
   | ADD ; int1 = gr_int ; reg2 = REG
     { {loc = ($startpos,$endpos) ; desc = Add (int1,reg2) } } 
+  | MULT ; int1 = gr_int ; reg2 = REG
+    { {loc = ($startpos,$endpos) ; desc = Mult (int1,reg2) } }
   | SUB ; int1 = gr_int ; reg2 = REG
     { {loc = ($startpos,$endpos) ; desc = Sub (int1,reg2) } } 
   | NEG ; reg1 = REG

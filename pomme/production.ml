@@ -65,10 +65,12 @@ let produit filename dlignes =
   (* Les instructions *)
   let mk_instr (dl : ligne desc) = match dl.desc with
     | Label _ -> failwith "Déjà traité."
-    (* Catégorie 001: Move et Set *)
+    (* Catégorie 001: les registres *)
     | Move(r1,r2) -> "001"^"0001"^"0" ^ _16 ^ (bin_r r1) ^ (bin_r r2)
     | Set(Const n,r2) -> "001"^"0010"^"0" ^ (bin_e dl.loc n) ^ _4 ^ (bin_r r2)
     | Set(Reg r1,r2) -> "001"^"0010"^"1" ^ _16 ^ (bin_r r1) ^ (bin_r r2)
+    | Input r1 -> "001"^"0011"^"0" ^ _16 ^ _4 ^ (bin_r r1)
+    | Output r1 -> "001"^"0100"^"0" ^ _16 ^ _4 ^ (bin_r r1)
 
     (* Catérogie 010: les opérations *)
     | Add(Const n,r2) -> "010"^"0001"^"0" ^ (bin_e dl.loc n) ^ _4 ^ (bin_r r2)

@@ -22,6 +22,8 @@ Voir `clock_real.pomme` et `clock_quick.pomme` pour des exemples.
 Les instructions fonctionnent pour des valeurs 8 ou 16 bits, le micro-processeur transforme les valeurs ci-besoin, et infine c'est le lieu d'écriture qui importe. Un entier brute est sur 16 bits signés.
 - `move <reg> <reg>` met le deuxième registre à la même valeur que le premier.
 - `set <int> <reg>` définit la valeur du registre. Préférez `move r1 r2` à `set $r1 r2`.
+- `input <reg>` demandera la valeur du registre à l'utilisateur à l'exécution.
+- `output <reg>` retourne la valeur dans le terminal à l'exécution
 - `mult <int> <reg>` multiplie la valeur du registre par l'int.
 - `add <int> <reg>` de même avec l'addition.
 - `sub <int> <reg>` la soustraction.
@@ -53,7 +55,7 @@ Si une instruction n'utilise pas d'entiers, ou qu'un seul registre, les bits vac
 Précision, c'est toujours le premier registre qui est utilisé pour calculer les adresses. Sinon, le résultat est mis dans le registre 2.
 
 ### Précision sur l'encodage des instructions: 
-Comme pour les registres, puisqu'il n'y a que 21 instructions différentes,
+Comme pour les registres, puisqu'il n'y a que 23 instructions différentes,
 5 bits suffiraient pour les décrire, mais on préfère une puissance de deux. 
 De plus `Add 5 r1` et `Add $r2 r1` ne se traitent pas de la même manière !
 Il faut préciser si le `<int>` est en fait un registre (si oui le premier)
@@ -66,9 +68,11 @@ préféré utiliser les trois premiers pour la catégorie de l'instruction
 (010 si c'est une opération, 011 si c'est en rapport avec RAM/ROM etc), les
 quatre suivants pour préciser et enfin le dernier bit cf paragraphe précédent.
 
-* Catégorie 001: Move et Set
+* Catégorie 001: Les registres 
 	- `move` 001 0001 0
 	- `set` 001 0010 0 si on utilise un entier primitif, exemple `set 5 r2` ou 001 0010 1 si on utilise un registre, exemple `set $r1 r2`
+	- `input` 001 0011 0
+	- `output` 001 0100 0
 * Catégorie 010: les opérations
 	- `add` 010 0001 0/1
 	- `mult` 010 0010 0/1

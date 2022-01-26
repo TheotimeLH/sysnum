@@ -12,6 +12,7 @@
   let instructions = Hashtbl.create 21
   let () = List.iter (fun (s,t) -> Hashtbl.add instructions s t)
     ["move",MOVE ; "set",SET ;
+     "input",INPUT ; "output",OUTPUT ;
      "mult",MULT ; "add",ADD ; "sub",SUB ; "neg",NEG ;
      "not",NOT ; "and",AND ; "or",OR ; "xor",XOR ;
      "incrz",INCRZ ;

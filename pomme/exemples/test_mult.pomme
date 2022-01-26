@@ -1,0 +1,7 @@
+Test:
+	set 4 r1
+	mult 7 r1
+	sub 28 r1
+	jump_non_nul Test
+set 8 r1
+mult 4 r1

@@ -11,6 +11,8 @@ type _addr = _reg option * int
 type ligne =
   | Label of _label
   | Move of _reg * _reg 
+  | Input of _reg
+  | Output of _reg
   | Set of _int * _reg
   | Mult of _int * _reg 
   | Add of _int * _reg  
