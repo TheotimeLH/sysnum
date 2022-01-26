@@ -3,42 +3,42 @@ open Graphics
 
 let print16 n0 n =
   let k0, k = ref n0, ref n in
-  let b0, b = ref (n0 mod 2), ref (n mod 2) in
+  let b0, b = ref (n0 land 1), ref (n land 1) in
   let set_clr () =
     if !b=1 then set_color foreground
     else set_color background in
   let aux () =
     if !b = !b0 then rmoveto 0 (-100)
     else (set_clr () ; rlineto 0 (-100) ) ;
-    k := !k/2 ; k0 := !k0/2 ;
-    b := !k mod 2 ; b0 := !k0 mod 2 ;
+    k := !k lsr 1 ; k0 := !k0 lsr 1 ;
+    b := !k land 1 ; b0 := !k0 land 1 ;
     if !b = !b0 then rmoveto 100 0
     else (set_clr () ; rlineto 100 0) ;
-    k := !k/2 ; k0 := !k0/2 ;
-    b := !k mod 2 ; b0 := !k0 mod 2 ;
+    k := !k lsr 1 ; k0 := !k0 lsr 1 ;
+    b := !k land 1 ; b0 := !k0 land 1 ;
     if !b = !b0 then rmoveto 0 100
     else (set_clr () ; rlineto 0 100) ;
-    k := !k/2 ; k0 := !k0/2 ;
-    b := !k mod 2 ; b0 := !k0 mod 2 ;
+    k := !k lsr 1 ; k0 := !k0 lsr 1 ;
+    b := !k land 1 ; b0 := !k0 land 1 ;
     if !b = !b0 then rmoveto (-100) 0
     else (set_clr () ; rlineto (-100) 0) ;
-    k := !k/2 ; k0 := !k0/2 ;
-    b := !k mod 2 ; b0 := !k0 mod 2 ;
+    k := !k lsr 1 ; k0 := !k0 lsr 1 ;
+    b := !k land 1 ; b0 := !k0 land 1 ;
     if !b = !b0 then rmoveto 0 100
     else (set_clr () ; rlineto 0 100) ;
-    k := !k/2 ; k0 := !k0/2 ;
-    b := !k mod 2 ; b0 := !k0 mod 2 ;
+    k := !k lsr 1 ; k0 := !k0 lsr 1 ;
+    b := !k land 1 ; b0 := !k0 land 1 ;
     if !b = !b0 then rmoveto 100 0
     else (set_clr () ; rlineto 100 0) ;
-    k := !k/2 ; k0 := !k0/2 ;
-    b := !k mod 2 ; b0 := !k0 mod 2 ;
+    k := !k lsr 1 ; k0 := !k0 lsr 1 ;
+    b := !k land 1 ; b0 := !k0 land 1 ;
     if !b = !b0 then rmoveto 0 (-100)
     else (set_clr () ; rlineto 0 (-100) )
   in
   aux () ; 
   rmoveto 100 0 ;
-  k := !k/2 ; k0 := !k0/2 ;
-  b := !k mod 2 ; b0 := !k0 mod 2 ;
+  k := !k lsr 1 ; k0 := !k0 lsr 1 ;
+  b := !k land 1 ; b0 := !k0 land 1 ;
   aux ()
 
 let s0 = ref 0
@@ -66,9 +66,9 @@ let affiche_batons
   else if mi <> !m1 then (
   moveto 800 600 ;
   print16 !m1 mi )
-  else if affiche_sec && s <> !s0 then (
+  else if s <> !s0 then (
   moveto 1300 600 ;
-  print16 !s0 s )
+  if affiche_sec then print16 !s0 s )
   else if j <> !j0 then (
   moveto 100 250 ;
   print16 !j0 j )
