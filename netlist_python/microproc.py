@@ -8,11 +8,11 @@ from netlist_python.decodeur import decodeur
 from netlist_python.batonneur import batonneur as sept_batons
 
 allow_ribbon_logic_operations(True)
-DEBOGUE_MODE = False
+DEBOGUE_MODE = True
 
 def main():
     #initialisation
-    prog_rom_addr_size = 10 
+    prog_rom_addr_size = 10
     prog_rom_word_size = 32
     reg_size = 16
     ram_addr_size = 10
@@ -52,8 +52,8 @@ def main():
     curr_line = Reg(Defer(prog_rom_addr_size, lambda:next_line))
     curr_code = ROM(prog_rom_addr_size, prog_rom_word_size, curr_line)
 
-    jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage, lire_la_rom, operande_gauche, operande_droit = decodeur(curr_code)
-
+    jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage, lire_la_rom, operande_gauche, operande_droit , stop_prgm = decodeur(curr_code)
+    stop_prgm.set_as_output("stop_prgm")
     next_line = liseur_code(jump_line, Defer(1, lambda:jump_flag), curr_line)
 
     #registres

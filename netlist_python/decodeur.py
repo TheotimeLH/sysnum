@@ -18,6 +18,9 @@ def decodeur(code) :
     c6 = commande[6]
     c7 = commande[7]
 
+    #stop_prgm, pour arrêter le processus si on a atteint une instruction 00000000
+    stop_prgm = ~(c0 | c1 | c2)
+
     #gestion du set et du move
     op_move_ou_set = ~c0 & ~c1 & c2 
     op_set_entier = op_move_ou_set & c5 & ~c6
@@ -61,7 +64,7 @@ def decodeur(code) :
 
     batonnage = c0 & ~c1 & c2 & c5 & ~c6
 
-    return jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage, lire_la_rom, operande_gauche, operande_droit
+    return jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage, lire_la_rom, operande_gauche, operande_droit, stop_prgm
 
 
 
@@ -86,6 +89,7 @@ def decodeur(code) :
 # lire_la_rom                   indicateur sur 1 bit
 # operande_gauche               vaut 1 si c’est r2, 0 si c’est r1
 # operande_droit                vaut 1 si c’est l’entier, et 0 si c’est r1
+# stop_prgm                     vaut 1 avec l'instruction 00000000, signe de la fin
 
 #debug :
 def main():

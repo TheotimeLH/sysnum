@@ -45,9 +45,11 @@ let compiler filename p =
 	let str_t_nom = "let t_nom = [|" ^ (String.concat ";" (Array.to_list t_nom)) ^ "|]\n" in
 	output_string cfile (str_nb_vars ^ str_t_nom) ;	
   let doit_affiche_batons = ref false in
-  let outputs' = List.filter 
-    (fun id -> if id = "maj_ecran" then 
-      (doit_affiche_batons := true ; false) else true)
+  let doit_stop = ref false in
+  let outputs' = List.filter (function
+    | "maj_ecran" -> doit_affiche_batons := true ; false
+    | "stop_prgm" -> doit_stop := true ; false
+    | _ -> true) 
     p.p_outputs in
 	recopie skel cfile ;
 
@@ -220,12 +222,12 @@ let compiler filename p =
 
 	(* === Les sorties === *)
   if !doit_affiche_batons then output_string cfile 
-    "\t\tGraphics.open_graph \" 2000x1000\" ; \n \
-     \t\tGraphics.set_line_width 10 ; \n" ;
+    "\t\tlet ecran_open = ref false in \n" ;
   recopie skel cfile ;
+    
 	let mk_sortie id =
-		  "\t\tlet sortie = intv_to_strb (var_"^ id ^" ()) "^(slen id)^" in\n\
-		  \t\tif !print_sorties then Printf.printf \"=> "^ id ^" = %s \\n\" sortie ;" in
+		"\t\tlet sortie = intv_to_strb (var_"^ id ^" ()) "^(slen id)^" in\n\
+		\t\tif !print_sorties then Printf.printf \"=> "^ id ^" = %s \\n\" sortie ;" in
 	output_string cfile (String.concat "\n" (List.map mk_sortie outputs')) ;
 	recopie skel cfile ;
 
@@ -264,9 +266,17 @@ let compiler filename p =
   if !doit_affiche_batons then output_string cfile
     ("\n\t\t (* Cas spécial, où on a demandé à utiliser des sept_batons : *) \n\
     \t\tif var_maj_ecran () = 1 then (\n\
+    \t\t\tif not !ecran_open then \n\
+    \t\t\t (ecran_open := true ; \n\
+    \t\t\tGraphics.open_graph \" 2000x1000\" ; \n \
+    \t\t\t\tGraphics.set_line_width 10) ; \n \
     \t\t\tlet ram = t_rams.(" ^ (string_of_int !num_ram_ecran) ^ ") in \n\
     \t\t\tAffiche.affiche_batons ram.(0) ram.(1) ram.(2) \
-      ram.(3) ram.(4) ram.(5) ram.(6) )  ;\n") ;
+      ram.(3) ram.(4) ram.(5) ram.(6) )  ;\n\n") ;
+
+  if !doit_stop then output_string cfile 
+    "\t\t (* Cas spécial où on veut pouvoir arrêter la machine *) \n\
+    \t\tif var_stop_prgm () = 1 then number_steps := !step ;\n" ;
 
   output_string cfile 
     (if !doit_affiche_batons then 
