@@ -71,9 +71,9 @@ pomme_ultra_quick:
 		make clk_ultra_quick
 clock_ultra_quick: microproc.exe pomme_ultra_quick init_time
   ifeq ($(SILENCE),"1")
-		./microproc.exe -s -roms rom_input.txt ../pomme/clock_ultra_fast_forward.txt
+		./microproc.exe -s -roms rom_input.txt ../pomme/exemples/clock_ultra_fast_forward.txt
   else
-		./microproc.exe -roms rom_input.txt ../pomme/clock_ultra_fast_forward.txt
+		./microproc.exe -roms rom_input.txt ../pomme/exemples/clock_ultra_fast_forward.txt
   endif
 
 .PHONY: mk_get_real_time mk_microproc pomme_real pomme_quick pomme_ultra_quick init_time

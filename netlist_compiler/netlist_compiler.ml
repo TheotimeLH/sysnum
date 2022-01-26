@@ -46,6 +46,7 @@ let compiler filename p =
 	output_string cfile (str_nb_vars ^ str_t_nom) ;	
   let doit_affiche_batons = ref false in
   let doit_stop = ref false in
+  let output_condition = ref "" in
   let outputs' = List.filter (function
     | "maj_ecran" -> doit_affiche_batons := true ; false
     | "stop_prgm" -> doit_stop := true ; false
@@ -171,6 +172,9 @@ let compiler filename p =
             | _ (*Nand*) -> " (lnot (n1 land "^sa2^")) land "^(uns l1) end ^" in \n"
 
 			|	Emux (choice,a1,a2) ->
+          if id = "output_prgm" then (match choice with
+            | Avar idc -> output_condition := idc
+            | _ -> failwith "wtf choice de l'output") ;
           let l1,sa1 = sarg a1 in
           let l2,sa2 = sarg a2 in
           let len = len id in
@@ -225,7 +229,11 @@ let compiler filename p =
     "\t\tlet ecran_open = ref false in \n" ;
   recopie skel cfile ;
     
-	let mk_sortie id =
+	let mk_sortie = function
+  | "output_prgm" -> 
+    "\t\tif var_"^ !output_condition^" () <> 0 then Printf.printf \"=> %s \\n\" \
+    (intv_to_strb (var_output_prgm ()) "^(slen "output_prgm")^") ;"
+  | id ->
 		"\t\tlet sortie = intv_to_strb (var_"^ id ^" ()) "^(slen id)^" in\n\
 		\t\tif !print_sorties then Printf.printf \"=> "^ id ^" = %s \\n\" sortie ;" in
 	output_string cfile (String.concat "\n" (List.map mk_sortie outputs')) ;

@@ -8,7 +8,7 @@ from netlist_python.decodeur import decodeur
 from netlist_python.batonneur import batonneur as sept_batons
 
 allow_ribbon_logic_operations(True)
-DEBOGUE_MODE = True
+DEBOGUE_MODE = False
 
 def main():
     #initialisation
@@ -47,12 +47,13 @@ def main():
         return value1, value2, resultat_precedent_nul, resultat_precedent_neg, operation
 
 
+    zeros16 = Constant("0"*16)
 
     #obtention du code
     curr_line = Reg(Defer(prog_rom_addr_size, lambda:next_line))
     curr_code = ROM(prog_rom_addr_size, prog_rom_word_size, curr_line)
 
-    jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage, lire_la_rom, operande_gauche, operande_droit , stop_prgm = decodeur(curr_code)
+    jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage, lire_la_rom, operande_gauche, operande_droit , stop_prgm , op_input , op_output = decodeur(curr_code)
     stop_prgm.set_as_output("stop_prgm")
     next_line = liseur_code(jump_line, Defer(1, lambda:jump_flag), curr_line)
 
@@ -66,12 +67,9 @@ def main():
 
 
     #écriture
-    write_data_reg = Mux(sauver_resultat_alu, Defer(16, lambda:autre_sauv), resultat)
-
+    write_data_reg = Mux(sauver_resultat_alu, Defer(16, lambda:autres_sauv), resultat)
     ram_addr = resultat
-
     rom_input = ROM(rom2_addr_size, rom2_word_size, resultat[8:16])
-
     ram_value = RAM(ram_addr_size, ram_word_size, resultat[6:16], write_enable_ram, resultat[6:16], value_reg2)
 
     #drapeau de saut
@@ -79,18 +77,25 @@ def main():
 
     #gestions des batons et de la ram à batons
     batonnage.set_as_output("maj_ecran")
-    batons = Mux(batonnage, Constant("0"*16), sept_batons(value_reg2))
+    batons = Mux(batonnage, zeros16, sept_batons(value_reg2))
     ram_batons = RAM(addr_size_batons, word_size_batons, resultat[6:16], batonnage, resultat[6:16], batons)
-
 
     #gestion de la real_clock
     real_clock = Input(1)
     rclock_bus = Constant("0"*15) + real_clock
 
+    # Si input
+    input_prgm = Input(16)
+    input_prgm_s = Mux(op_input,zeros16, input_prgm)
+
+    # Pour output
+    output_prgm = Mux(op_output,zeros16, value_reg2)
+    output_prgm.set_as_output("output_prgm")
 
     #sauvegarde dans les registres
-    autre_sauv_interm = Mux(lire_la_rom, ram_value, rom_input)
-    autre_sauv = Mux(lire_la_clock, autre_sauv_interm, rclock_bus)
+    sauv_rom_ram = Mux(lire_la_rom, ram_value, rom_input)
+    sauv_input = Mux(op_input,sauv_rom_ram,input_prgm_s)
+    autres_sauv = Mux(lire_la_clock, sauv_input, rclock_bus)
 
     if DEBOGUE_MODE :
         next_step = Input(1)
@@ -119,6 +124,7 @@ def main():
         rom_input.set_as_output("valeur_lue_rom")
         batons.set_as_output("batons")
         real_clock.set_as_output("real_clock")
+        op_input.set_as_output("op_input")
         
         
 

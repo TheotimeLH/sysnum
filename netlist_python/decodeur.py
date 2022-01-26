@@ -21,34 +21,36 @@ def decodeur(code) :
     #stop_prgm, pour arrêter le processus si on a atteint une instruction 00000000
     stop_prgm = ~(c0 | c1 | c2)
 
-    #gestion du set et du move
-    op_move_ou_set = ~c0 & ~c1 & c2 
-    op_set_entier = op_move_ou_set & c5 & ~c6
-    op_move = op_move_ou_set & ~op_set_entier
+    # 001 : Opérations sur les registres
+    op_reg = ~c0 & ~c1 & c2
+    op_move = op_reg & ~(c3 | c4 | c5) & c6
+    op_set = op_reg & ~(c3 | c4 | c6) & c5
+    op_input = op_reg & ~(c3 | c4) & c5 & c6
+    op_output = op_reg & ~(c3 | c5 | c6) & c4
 
-    #gestion des sauts
+    #100 : Les sauts
     sautage = c0 & ~(c1 | c2)
     jump_flag_inconditionnel = Mux(sautage, zero, (~c3 & ~c4 & ~c5 & c6))
     jump_flag_neg = Mux(sautage, zero, (~c3 & c4 & ~c5 & ~c6))
     jump_flag_non_neg = Mux(sautage, zero, (~c3 & c4 & ~c5 & c6))
     jump_flag_nul = Mux(sautage, zero, (~c3 & ~c4 & c5 & ~c6))
     jump_flag_non_nul = Mux(sautage, zero, (~c3 & ~c4 & c5 & c6))
-    
+
     jump_line = entier[6:16]
- 
-     
-    #operation brute
+
+
+    #010 : operation brute
     operation_op = commande[3:8]
     operation_ram = Constant("0001") + c7
     operation_pas_doperation = Constant("00000")
-    pas_de_calcul = (~c0 & ~c1 & c2 & ~(op_set_entier)) | (c0 & ~c1 & ~c2) | Defer(1, lambda:lire_la_clock)
-    calcul_daddresse = (~c0 & c1 & c2 ) | (c0 & ~c1 & c2) 
-    operation = Mux((calcul_daddresse | op_set_entier), operation_op, operation_ram)
+    pas_de_calcul = (~c0 & ~c1 & c2 & ~(op_set)) | (c0 & ~c1 & ~c2) | Defer(1, lambda:lire_la_clock)
+    calcul_daddresse = (~c0 & c1 & c2 ) | (c0 & ~c1 & c2)
+    operation = Mux((calcul_daddresse | op_set), operation_op, operation_ram)
     operation_brute = Mux(pas_de_calcul, operation, operation_pas_doperation)
 
     #calcul des operandes
-    operande_gauche = ~(calcul_daddresse | op_set_entier |op_move) #vaut 1 si r2, 0 si r1
-    operande_droit = (~c7  & ~c0 & c1 & ~c2) | calcul_daddresse | op_set_entier #1 si entier, 0 si r1
+    operande_gauche = ~(calcul_daddresse | op_reg) #vaut 1 si r2, 0 si r1
+    operande_droit = (~c7  & ~c0 & c1 & ~c2) | calcul_daddresse | op_set #1 si entier, 0 si r1
 
     #indicatrice de "lecture de la clock", rom d’entrée
     lire_la_clock = c0 & ~c1 & c2 & ~c5 & c6
@@ -58,13 +60,13 @@ def decodeur(code) :
     #write_enable
     write_enable_ram = ~c0 & c1 & c2 & ~c3 & ~c4 & c5 & ~c6
     write_enable_reg = ~(c0 | write_enable_ram ) | lire_la_clock
-   
+
     #chargement ou calcul
-    sauver_resultat_alu = ~((c0 ^ c1) & c2) #catégorie différente de rom ram ou clock
+    sauver_resultat_alu = ~((c0 ^ c1) & c2) & ~op_input  #catégorie différente de rom ram ou clock
 
     batonnage = c0 & ~c1 & c2 & c5 & ~c6
 
-    return jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage, lire_la_rom, operande_gauche, operande_droit, stop_prgm
+    return jump_line, jump_flag_inconditionnel, jump_flag_neg, jump_flag_non_neg, jump_flag_nul, jump_flag_non_nul, operation_brute, entier, read_addr1, read_addr2, write_addr_reg, write_enable_reg, write_enable_ram, lire_la_clock, sauver_resultat_alu, batonnage, lire_la_rom, operande_gauche, operande_droit, stop_prgm , op_input , op_output
 
 
 
