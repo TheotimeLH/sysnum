@@ -232,9 +232,9 @@ let compiler filename p =
 	let mk_sortie = function
   | "output_prgm" -> 
     "\t\tif var_"^ !output_condition^" () <> 0 then Printf.printf \"=> %s \\n\" \
-    (intv_to_strb (var_output_prgm ()) "^(slen "output_prgm")^") ;"
+    (intv_to_str (var_output_prgm ()) "^(slen "output_prgm")^") ;"
   | id ->
-		"\t\tlet sortie = intv_to_strb (var_"^ id ^" ()) "^(slen id)^" in\n\
+		"\t\tlet sortie = intv_to_str (var_"^ id ^" ()) "^(slen id)^" in\n\
 		\t\tif !print_sorties then Printf.printf \"=> "^ id ^" = %s \\n\" sortie ;" in
 	output_string cfile (String.concat "\n" (List.map mk_sortie outputs')) ;
 	recopie skel cfile ;

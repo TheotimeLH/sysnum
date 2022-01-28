@@ -8,6 +8,8 @@ let number_steps = ref max_int
 let print_sorties = ref true
 let dossier_rom = ref "rom_test"
 let roms_donnees = ref []
+let io_bin = ref true 
+let output_signed = ref false
 
 (* ========== Fonctions auxiliaires ========== *)
 
@@ -19,10 +21,12 @@ let roms_donnees = ref []
 	provoque une erreur.
   Rem : tout chiffre > 0 est pris pour un 1, exemple : "0502" -> "0101" 
 
-	intv : nos values, de la forme (len,int) où les informations sont dans
+	intv : nos values, de simples int où les informations sont dans
 	les len premiers bits de l'int.																					*)
+
 exception Wrong_length
 
+(* Les fonctions de convertion int <-> string *)
 let strb_to_intv s k = (* k : le nb de bits voulus *)
 	if String.length s <> k then raise Wrong_length
 	else begin let n = ref 0 in
@@ -36,6 +40,28 @@ let intv_to_strb n len =
 		s := string_of_int (!k mod 2) ^ !s ;
 		k := !k lsr 1 done;
 	!s
+
+let str10_to_intv s k =
+	if s = "" then raise Wrong_length ;
+	let n = int_of_string s in
+	if s.[0] = '-'
+	then begin
+		let b_fort = 1 lsl (k-1) in
+		let m = n + b_fort in
+		if m<0 then raise Wrong_length
+		else b_fort + m end
+	else if n >= 1 lsl k then raise Wrong_length
+		else n
+
+let intv_to_str10 n len =
+	let b_fort = 1 lsl (len -1) in
+	if n>= b_fort && !output_signed then
+		string_of_int (n - (2 * b_fort))
+	else string_of_int n
+
+let intv_to_str n len =
+	if !io_bin then intv_to_strb n len
+	else intv_to_str10 n len		
 
 (* ==== Strutures ==== *)
 
@@ -68,7 +94,9 @@ let t_rams = Array.map (fun a_s -> Array.make (1 lsl a_s) 0) as_rams
 
 let rec ask_input num len = 
 	Printf.printf "%s = " t_nom.(num) ;
-	try (strb_to_intv (read_line ()) len)
+	try 
+		if !io_bin then (strb_to_intv (read_line ()) len)
+		else (str10_to_intv (read_line ()) len)
 	with Wrong_length -> 
 		Printf.printf "ERREUR : on demande %d bits \n" len;
 		ask_input num len
@@ -145,7 +173,7 @@ $ # Pour l'affichage
 		(* === Calcul et affichage des sorties === *)
 $
 # (* De la forme
-Printf.printf "=> <nom> = %s \n" (intv_to_strb (var_<nom> ()) ; *)
+Printf.printf "=> <nom> = %s \n" (intv_to_str (var_<nom> ()) ; *)
 #
 
 		(* === Mise à jour des REG et des RAM === *)
@@ -167,7 +195,13 @@ let () = Arg.parse
 	["-n", Arg.Set_int number_steps, "Number of steps to simulate";
 	 "-s", Arg.Clear print_sorties, "Disable print outputs";
 	 "-romdir", Arg.Set_string dossier_rom, "Roms' directory";
-	 "-roms", Arg.Rest (fun r -> roms_donnees := !roms_donnees @ [r]), "Give Roms, and hope they will be called in the same order"] 
+	 "-roms", Arg.Rest (fun r -> roms_donnees := !roms_donnees @ [r]), 
+			"Give Roms, and hope they will be called in the right order";
+	 "-notbin", Arg.Clear io_bin,
+			"Turn inputs and outputs' representation to base 10. \n\
+			Attention, io are unsigned, but you can give negatif numbers.";
+	 "-signed", Arg.Set output_signed,
+			"To set output as signed int, only useful with -notbin"] 
 	(fun _ -> ()) ""
 
 let () = simulator () 
